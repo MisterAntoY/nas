@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Path \"c:\\\\Users\\\\imendes\\\\nas\" -Force -Recurse | Select-Object -Property FullName | ForEach-Object { $_.FullName } | Sort-Object)",
+      "PowerShell(Get-ChildItem -Path \"c:\\\\Users\\\\imendes\\\\Downloads\\\\Kazola\\\\meme-battle\" -Force -Recurse | Select-Object -Property FullName | ForEach-Object { $_.FullName } | Sort-Object)",
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(npx vite *)"
+    ]
+  }
+}
