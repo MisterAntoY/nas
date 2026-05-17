@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="260" viewBox="0 0 260 260">
+  <defs>
+    <linearGradient id="dia1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#F0F4FF"/>
+      <stop offset="100%" stop-color="#A8C0E8"/>
+    </linearGradient>
+    <linearGradient id="dia2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#6080C0"/>
+    </linearGradient>
+    <linearGradient id="dia3" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%"   stop-color="#D8E8FF"/>
+      <stop offset="100%" stop-color="#3050A0"/>
+    </linearGradient>
+    <radialGradient id="platinum" cx="40%" cy="35%" r="60%">
+      <stop offset="0%"   stop-color="#F0F0F5"/>
+      <stop offset="100%" stop-color="#606068"/>
+    </radialGradient>
+    <filter id="ds">
+      <feDropShadow dx="2" dy="4" stdDeviation="7" flood-color="#2040A0" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <!-- Platinum setting -->
+  <ellipse cx="130" cy="200" rx="32" ry="9" fill="url(#platinum)" opacity="0.9"/>
+  <!-- Diamond body — brilliant cut approximation -->
+  <!-- Top crown (table + upper halves) -->
+  <polygon points="130,30 200,110 130,130 60,110" fill="url(#dia1)" filter="url(#ds)"/>
+  <polygon points="130,30 60,110 30,70 90,20" fill="url(#dia2)"/>
+  <polygon points="130,30 200,110 230,70 170,20" fill="#E8F0FF"/>
+  <polygon points="30,70 90,20 130,30 60,110" fill="url(#dia2)"/>
+  <!-- Lower pavilion -->
+  <polygon points="60,110 130,130 130,230" fill="url(#dia3)"/>
+  <polygon points="200,110 130,130 130,230" fill="#C0D4FF"/>
+  <polygon points="60,110 200,110 130,230" fill="none" stroke="rgba(80,120,220,0.3)" stroke-width="1"/>
+  <!-- Table facet outline -->
+  <polygon points="130,30 200,110 130,130 60,110" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+  <!-- Sparkle highlights -->
+  <circle cx="105" cy="62" r="5" fill="white" opacity="0.9"/>
+  <circle cx="158" cy="55" r="3" fill="white" opacity="0.7"/>
+  <circle cx="84" cy="88" r="3" fill="white" opacity="0.6"/>
+  <line x1="105" y1="50" x2="105" y2="74" stroke="white" stroke-width="1.5" opacity="0.8"/>
+  <line x1="93" y1="62" x2="117" y2="62" stroke="white" stroke-width="1.5" opacity="0.8"/>
+</svg>

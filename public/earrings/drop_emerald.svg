@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="220" height="400" viewBox="0 0 220 400">
+  <defs>
+    <linearGradient id="gld" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#7A5200"/>
+      <stop offset="30%"  stop-color="#C89B2A"/>
+      <stop offset="50%"  stop-color="#F5E07A"/>
+      <stop offset="70%"  stop-color="#C89B2A"/>
+      <stop offset="100%" stop-color="#7A5200"/>
+    </linearGradient>
+    <linearGradient id="em" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%"   stop-color="#0A4010"/>
+      <stop offset="30%"  stop-color="#1A8030"/>
+      <stop offset="55%"  stop-color="#40D060"/>
+      <stop offset="80%"  stop-color="#1A8030"/>
+      <stop offset="100%" stop-color="#0A4010"/>
+    </linearGradient>
+    <linearGradient id="emh" x1="0.2" y1="0.1" x2="0.5" y2="0.5">
+      <stop offset="0%"   stop-color="#80FFB0" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#80FFB0" stop-opacity="0"/>
+    </linearGradient>
+    <filter id="emsh">
+      <feDropShadow dx="2" dy="4" stdDeviation="5" flood-color="#003010" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+  <!-- Gold hook -->
+  <path d="M 110 18 C 110 18, 148 18, 158 38 C 168 58, 150 80, 128 80" fill="none" stroke="url(#gld)" stroke-width="7" stroke-linecap="round"/>
+  <line x1="110" y1="18" x2="110" y2="80" stroke="url(#gld)" stroke-width="5.5" stroke-linecap="round"/>
+  <!-- Connector bead -->
+  <ellipse cx="110" cy="86" rx="8" ry="8" fill="url(#gld)"/>
+  <!-- Gold setting (bail) -->
+  <rect x="88" y="94" width="44" height="24" rx="6" fill="url(#gld)"/>
+  <!-- Gold frame of emerald -->
+  <rect x="60" y="118" width="100" height="200" rx="10" fill="url(#gld)" filter="url(#emsh)"/>
+  <!-- Emerald stone (octagon / emerald cut) -->
+  <polygon points="85,130 135,130 155,150 155,300 135,318 85,318 65,300 65,150"
+           fill="url(#em)"/>
+  <!-- Emerald facets / cuts -->
+  <polygon points="85,130 135,130 155,150 155,300 135,318 85,318 65,300 65,150"
+           fill="none" stroke="rgba(100,255,150,0.3)" stroke-width="1.5"/>
+  <line x1="65" y1="175" x2="155" y2="175" stroke="rgba(100,255,150,0.25)" stroke-width="1.5"/>
+  <line x1="65" y1="275" x2="155" y2="275" stroke="rgba(100,255,150,0.25)" stroke-width="1.5"/>
+  <line x1="88" y1="130" x2="88" y2="318" stroke="rgba(100,255,150,0.2)" stroke-width="1"/>
+  <line x1="132" y1="130" x2="132" y2="318" stroke="rgba(100,255,150,0.2)" stroke-width="1"/>
+  <!-- Highlight -->
+  <polygon points="85,130 120,130 140,150 140,200 120,215 85,215 72,200 72,150"
+           fill="url(#emh)"/>
+</svg>

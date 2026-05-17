@@ -2,21 +2,33 @@ import { FilesetResolver, FaceLandmarker } from '@mediapipe/tasks-vision';
 import { MEDIAPIPE_CONFIG } from '@/config/mediapipe';
 import type { EarringSide, FaceData, FaceLandmark } from '@/types';
 
-let landmarkerPromise: Promise<FaceLandmarker> | null = null;
+export type LandmarkerStatus = 'idle' | 'loading' | 'ready' | 'error';
 
-/**
- * Inicializa o FaceLandmarker do MediaPipe de forma lazy e com cache.
- * O primeiro carregamento demora alguns segundos (download do modelo WASM).
- */
+type StatusListener = (status: LandmarkerStatus) => void;
+
+let landmarkerPromise: Promise<FaceLandmarker> | null = null;
+let currentStatus: LandmarkerStatus = 'idle';
+const listeners = new Set<StatusListener>();
+
+function setStatus(s: LandmarkerStatus) {
+  currentStatus = s;
+  listeners.forEach((fn) => fn(s));
+}
+
+export function subscribeLandmarkerStatus(fn: StatusListener): () => void {
+  listeners.add(fn);
+  fn(currentStatus);
+  return () => listeners.delete(fn);
+}
+
 export async function getLandmarker(): Promise<FaceLandmarker> {
   if (landmarkerPromise) return landmarkerPromise;
 
+  setStatus('loading');
   landmarkerPromise = (async () => {
     const vision = await FilesetResolver.forVisionTasks(MEDIAPIPE_CONFIG.wasmUrl);
     return FaceLandmarker.createFromOptions(vision, {
-      baseOptions: {
-        modelAssetPath: MEDIAPIPE_CONFIG.modelUrl,
-      },
+      baseOptions: { modelAssetPath: MEDIAPIPE_CONFIG.modelUrl },
       outputFaceBlendshapes: false,
       outputFacialTransformationMatrixes: false,
       runningMode: MEDIAPIPE_CONFIG.runningMode,
@@ -24,14 +36,18 @@ export async function getLandmarker(): Promise<FaceLandmarker> {
     });
   })();
 
+  landmarkerPromise
+    .then(() => setStatus('ready'))
+    .catch(() => {
+      setStatus('error');
+      landmarkerPromise = null;
+    });
+
   return landmarkerPromise;
 }
 
-/** Pré-aquece o modelo MediaPipe em background (evita delay na primeira detecção). */
 export function warmupLandmarker(): void {
-  getLandmarker().catch(() => {
-    // Falha silenciosa — será reexperimentado quando o utilizador gerar o preview
-  });
+  getLandmarker().catch(() => undefined);
 }
 
 function dist(a: FaceLandmark, b: FaceLandmark): number {
@@ -55,19 +71,18 @@ export async function detectFaceData(
   try {
     landmarker = await getLandmarker();
   } catch {
-    return { ok: false, error: 'Falha ao carregar o modelo de detecção facial. Verifique a ligação à internet.' };
+    return { ok: false, error: 'Failed to load the face detection model. Check your internet connection.' };
   }
 
   const result = landmarker.detect(img);
   const faces = result?.faceLandmarks;
 
   if (!faces || faces.length === 0) {
-    return { ok: false, error: 'Rosto não detectado. Tente uma selfie com boa iluminação e rosto de frente.' };
+    return { ok: false, error: 'No face detected. Try a well-lit selfie facing the camera.' };
   }
 
   const lm = faces[0] as FaceLandmark[];
 
-  // Índices MediaPipe FaceLandmarker para pontos anatómicos relevantes
   const leftEye = lm[33];
   const rightEye = lm[263];
   const nose = lm[1];
@@ -76,15 +91,10 @@ export async function detectFaceData(
   const rightCheek = lm[454];
 
   const eyeDist = dist(leftEye, rightEye);
-
-  // Roll: inclinação da cabeça pela linha dos olhos
   const rollRad = Math.atan2(rightEye.y - leftEye.y, rightEye.x - leftEye.x);
-
-  // Yaw: estimativa de rotação horizontal pelo desvio do nariz
   const midEyeX = (leftEye.x + rightEye.x) / 2;
   const yaw = clamp((nose.x - midEyeX) / (eyeDist + 1e-6), -0.6, 0.6);
 
-  // Posição da orelha com offset descendente para alinhar com o lóbulo
   const cheek = side === 'left' ? leftCheek : rightCheek;
   const faceHeight = Math.abs(chin.y - (leftEye.y + rightEye.y) / 2);
   const anchor = {
@@ -92,7 +102,6 @@ export async function detectFaceData(
     y: cheek.y + 0.1 * faceHeight,
   };
 
-  // Pequeno ajuste de perspectiva pelo yaw
   const yawNudge = 0.06 * eyeDist * (side === 'left' ? -yaw : yaw);
   anchor.x = clamp(anchor.x + yawNudge, 0.02, 0.98);
 

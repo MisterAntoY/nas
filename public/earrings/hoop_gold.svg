@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="380" viewBox="0 0 300 380">
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#7A5400"/>
+      <stop offset="28%"  stop-color="#C89B2A"/>
+      <stop offset="50%"  stop-color="#F5E07A"/>
+      <stop offset="72%"  stop-color="#C89B2A"/>
+      <stop offset="100%" stop-color="#7A5400"/>
+    </linearGradient>
+    <linearGradient id="g1h" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#D4AF37" stop-opacity="0"/>
+      <stop offset="40%"  stop-color="#FFF8C0" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#D4AF37" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="post" cx="40%" cy="35%" r="60%">
+      <stop offset="0%"   stop-color="#FFECA0"/>
+      <stop offset="100%" stop-color="#8B6300"/>
+    </radialGradient>
+    <filter id="sh1" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="3" dy="5" stdDeviation="5" flood-color="#000" flood-opacity="0.22"/>
+    </filter>
+  </defs>
+  <!-- Attachment post -->
+  <ellipse cx="150" cy="22" rx="9" ry="9" fill="url(#post)"/>
+  <rect x="144" y="22" width="12" height="26" rx="4" fill="url(#g1)"/>
+  <!-- Shadow ring -->
+  <circle cx="153" cy="228" r="147" fill="none" stroke="rgba(0,0,0,0.18)" stroke-width="32"/>
+  <!-- Main hoop -->
+  <circle cx="150" cy="225" r="145" fill="none" stroke="url(#g1)" stroke-width="26" filter="url(#sh1)"/>
+  <!-- Inner edge darkening -->
+  <circle cx="150" cy="225" r="145" fill="none" stroke="#6B4800" stroke-width="3"/>
+  <!-- Outer edge darkening -->
+  <circle cx="150" cy="225" r="145" fill="none" stroke="#6B4800" stroke-width="2" stroke-dasharray="912 0"/>
+  <!-- Top highlight -->
+  <path d="M 100 85 A 145 145 0 0 1 200 85" fill="none" stroke="url(#g1h)" stroke-width="10" stroke-linecap="round"/>
+  <!-- Side highlights -->
+  <path d="M 295 185 A 145 145 0 0 1 295 265" fill="none" stroke="rgba(255,240,120,0.35)" stroke-width="7" stroke-linecap="round"/>
+</svg>

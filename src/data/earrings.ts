@@ -1,40 +1,103 @@
 import type { Earring } from '@/types';
 
-/**
- * Catálogo de brincos disponíveis para o try-on.
- *
- * Para adicionar brincos reais:
- * 1. Coloque o ficheiro de imagem em /public/earrings/ (PNG ou WebP)
- * 2. Adicione a entrada abaixo com o caminho "/earrings/nome.png"
- * 3. Ajuste anchorX/anchorY para o ponto de fixação no lóbulo da orelha
- * 4. Ajuste scaleFactor para o tamanho relativo ao rosto (0.1 = pequeno, 1.0 = grande)
- */
 export const earrings: Earring[] = [
   {
     id: 'hoop_gold',
-    name: 'Argola Dourada',
-    file: '/earrings/hoop_gold.png',
+    name: 'Gold Hoop',
+    file: '/earrings/hoop_gold.svg',
     anchorX: 0.5,
-    anchorY: 0.22,
+    anchorY: 0.07,
     scaleFactor: 0.55,
     rotOffsetDeg: 0,
   },
   {
-    id: 'stud_pearl',
-    name: 'Pérola',
-    file: '/earrings/stud_pearl.png',
+    id: 'hoop_rose_gold',
+    name: 'Rose Gold Hoop',
+    file: '/earrings/hoop_rose_gold.svg',
     anchorX: 0.5,
-    anchorY: 0.5,
+    anchorY: 0.07,
+    scaleFactor: 0.52,
+    rotOffsetDeg: 0,
+  },
+  {
+    id: 'stud_pearl',
+    name: 'Pearl Stud',
+    file: '/earrings/stud_pearl.svg',
+    anchorX: 0.5,
+    anchorY: 0.50,
     scaleFactor: 0.22,
     rotOffsetDeg: 0,
   },
   {
-    id: 'drop_silver',
-    name: 'Gota Prata',
-    file: '/earrings/drop_silver.png',
+    id: 'stud_diamond',
+    name: 'Diamond Solitaire',
+    file: '/earrings/stud_diamond.svg',
     anchorX: 0.5,
-    anchorY: 0.14,
-    scaleFactor: 0.7,
+    anchorY: 0.50,
+    scaleFactor: 0.22,
+    rotOffsetDeg: 0,
+  },
+  {
+    id: 'stud_coral',
+    name: 'Coral Stud',
+    file: '/earrings/stud_coral.svg',
+    anchorX: 0.5,
+    anchorY: 0.50,
+    scaleFactor: 0.24,
+    rotOffsetDeg: 0,
+  },
+  {
+    id: 'drop_silver',
+    name: 'Silver Drop',
+    file: '/earrings/drop_silver.svg',
+    anchorX: 0.5,
+    anchorY: 0.05,
+    scaleFactor: 0.70,
+    rotOffsetDeg: 0,
+  },
+  {
+    id: 'drop_emerald',
+    name: 'Emerald Drop',
+    file: '/earrings/drop_emerald.svg',
+    anchorX: 0.5,
+    anchorY: 0.06,
+    scaleFactor: 0.72,
+    rotOffsetDeg: 0,
+  },
+  {
+    id: 'drop_pearl',
+    name: 'Pearl Drop',
+    file: '/earrings/drop_pearl.svg',
+    anchorX: 0.5,
+    anchorY: 0.05,
+    scaleFactor: 0.75,
+    rotOffsetDeg: 0,
+  },
+  {
+    id: 'drop_sapphire',
+    name: 'Sapphire Drop',
+    file: '/earrings/drop_sapphire.svg',
+    anchorX: 0.5,
+    anchorY: 0.05,
+    scaleFactor: 0.75,
+    rotOffsetDeg: 0,
+  },
+  {
+    id: 'huggie_gold',
+    name: 'Gold Huggie',
+    file: '/earrings/huggie_gold.svg',
+    anchorX: 0.5,
+    anchorY: 0.11,
+    scaleFactor: 0.40,
+    rotOffsetDeg: 0,
+  },
+  {
+    id: 'chandelier_gold',
+    name: 'Gold Chandelier',
+    file: '/earrings/chandelier_gold.svg',
+    anchorX: 0.5,
+    anchorY: 0.05,
+    scaleFactor: 0.90,
     rotOffsetDeg: 0,
   },
 ];

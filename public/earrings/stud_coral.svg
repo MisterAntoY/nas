@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="260" viewBox="0 0 260 260">
+  <defs>
+    <radialGradient id="coral" cx="36%" cy="30%" r="65%">
+      <stop offset="0%"   stop-color="#FFB8B0"/>
+      <stop offset="35%"  stop-color="#F07060"/>
+      <stop offset="70%"  stop-color="#C83838"/>
+      <stop offset="100%" stop-color="#8A1818"/>
+    </radialGradient>
+    <radialGradient id="coralsh" cx="60%" cy="65%" r="45%">
+      <stop offset="0%"   stop-color="#FF9090" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#FF9090" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="cgold" cx="38%" cy="32%" r="62%">
+      <stop offset="0%"   stop-color="#F5E060"/>
+      <stop offset="100%" stop-color="#7A5000"/>
+    </radialGradient>
+    <filter id="cors">
+      <feDropShadow dx="2" dy="4" stdDeviation="6" flood-color="#800000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <!-- Gold setting -->
+  <ellipse cx="130" cy="200" rx="38" ry="10" fill="url(#cgold)" opacity="0.85"/>
+  <ellipse cx="130" cy="196" rx="36" ry="9" fill="url(#cgold)"/>
+  <!-- Coral disc -->
+  <circle cx="130" cy="124" r="96" fill="url(#coral)" filter="url(#cors)"/>
+  <!-- Coral sheen -->
+  <circle cx="130" cy="124" r="96" fill="url(#coralsh)"/>
+  <!-- Coral natural texture lines -->
+  <circle cx="130" cy="124" r="60" fill="none" stroke="rgba(200,80,60,0.2)" stroke-width="1.5"/>
+  <circle cx="130" cy="124" r="30" fill="none" stroke="rgba(200,80,60,0.15)" stroke-width="1"/>
+  <!-- Specular highlight -->
+  <ellipse cx="106" cy="92" rx="24" ry="17" fill="white" opacity="0.45" transform="rotate(-20 106 92)"/>
+  <!-- Gold prong tips -->
+  <ellipse cx="88" cy="196" rx="6" ry="6" fill="url(#cgold)"/>
+  <ellipse cx="130" cy="206" rx="6" ry="6" fill="url(#cgold)"/>
+  <ellipse cx="172" cy="196" rx="6" ry="6" fill="url(#cgold)"/>
+</svg>

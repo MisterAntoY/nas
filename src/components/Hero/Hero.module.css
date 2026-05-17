@@ -1,0 +1,271 @@
+.hero {
+  max-width: 1120px;
+  margin: 0 auto var(--space-xl) auto;
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: var(--space-xl);
+  align-items: center;
+  padding: var(--space-xl) var(--space-md);
+}
+
+/* ─── Left / content ──────────────────────────────────────── */
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.eyebrowDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  flex-shrink: 0;
+}
+
+.headline {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.accent {
+  color: var(--color-accent);
+  position: relative;
+}
+
+.br {
+  display: block;
+}
+
+.subheadline {
+  font-size: var(--text-md);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+  max-width: 480px;
+}
+
+/* ─── Benefits ────────────────────────────────────────────── */
+.benefits {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.benefit {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+}
+
+.benefitIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius-md);
+  background: var(--color-accent-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.benefitIcon svg {
+  width: 18px;
+  height: 18px;
+  color: var(--color-accent);
+}
+
+.benefit div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.benefit strong {
+  font-size: var(--text-sm);
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.benefit p {
+  font-size: var(--text-sm);
+  color: var(--color-text-hint);
+  margin: 0;
+}
+
+/* ─── CTA ─────────────────────────────────────────────────── */
+.cta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.ctaBtn {
+  appearance: none;
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 15px 28px;
+  background: var(--color-primary);
+  color: var(--color-primary-fg);
+  font-size: var(--text-md);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  align-self: flex-start;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    transform var(--transition-fast),
+    box-shadow var(--transition-fast);
+  box-shadow: 0 4px 14px rgba(28, 24, 20, 0.22);
+  min-height: 52px;
+}
+
+.ctaBtn:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(28, 24, 20, 0.28);
+}
+
+.ctaBtn:active {
+  transform: translateY(0);
+}
+
+.ctaArrow {
+  width: 18px;
+  height: 18px;
+}
+
+.ctaNote {
+  font-size: var(--text-xs);
+  color: var(--color-text-hint);
+  margin: 0;
+}
+
+/* ─── Visual / right column ───────────────────────────────── */
+.visual {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+}
+
+.visualRing {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(196, 154, 48, 0.25);
+  animation: spin 30s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.visualCard {
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+  width: 260px;
+  position: relative;
+  z-index: 1;
+}
+
+.visualDots {
+  display: flex;
+  gap: 5px;
+  align-self: flex-start;
+}
+
+.visualDots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-border-subtle);
+}
+
+.visualFace {
+  width: 120px;
+  height: 120px;
+}
+
+.visualFace svg {
+  width: 100%;
+  height: 100%;
+}
+
+.visualLabel {
+  font-size: var(--text-xs);
+  color: var(--color-text-hint);
+  text-align: center;
+  margin: 0;
+}
+
+/* ─── Responsive ──────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .hero {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: var(--space-lg);
+    padding: var(--space-lg) var(--space-md);
+  }
+
+  .eyebrow {
+    justify-content: center;
+  }
+
+  .subheadline {
+    max-width: none;
+  }
+
+  .benefits {
+    align-items: flex-start;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .cta {
+    align-items: center;
+  }
+
+  .ctaBtn {
+    align-self: center;
+  }
+
+  .visual {
+    max-width: 280px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .headline {
+    font-size: 1.8rem;
+  }
+
+  .br {
+    display: inline;
+  }
+}

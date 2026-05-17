@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="260" viewBox="0 0 260 260">
+  <defs>
+    <radialGradient id="pearl" cx="38%" cy="32%" r="62%">
+      <stop offset="0%"   stop-color="#FFFFFF"/>
+      <stop offset="25%"  stop-color="#F8F3EE"/>
+      <stop offset="55%"  stop-color="#EDE0D0"/>
+      <stop offset="80%"  stop-color="#D4C4B0"/>
+      <stop offset="100%" stop-color="#B8A898"/>
+    </radialGradient>
+    <radialGradient id="pearlSheen" cx="60%" cy="65%" r="45%">
+      <stop offset="0%"   stop-color="#F0E8E0" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#F0E8E0" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="setting" cx="40%" cy="35%" r="60%">
+      <stop offset="0%"   stop-color="#F5E060"/>
+      <stop offset="100%" stop-color="#7A5200"/>
+    </radialGradient>
+    <filter id="ps">
+      <feDropShadow dx="2" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.28"/>
+    </filter>
+  </defs>
+  <!-- Gold setting ring -->
+  <ellipse cx="130" cy="200" rx="36" ry="10" fill="url(#setting)" opacity="0.8"/>
+  <ellipse cx="130" cy="196" rx="34" ry="9" fill="url(#setting)"/>
+  <!-- Pearl -->
+  <circle cx="130" cy="128" r="100" fill="url(#pearl)" filter="url(#ps)"/>
+  <!-- Secondary sheen (orient/luster) -->
+  <circle cx="130" cy="128" r="100" fill="url(#pearlSheen)"/>
+  <!-- Specular highlight -->
+  <ellipse cx="104" cy="96" rx="22" ry="16" fill="white" opacity="0.55" transform="rotate(-20 104 96)"/>
+  <!-- Subtle shadow on bottom -->
+  <ellipse cx="130" cy="128" rx="100" ry="100" fill="none" stroke="rgba(100,80,60,0.12)" stroke-width="4"/>
+</svg>

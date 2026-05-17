@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="380" viewBox="0 0 300 380">
+  <defs>
+    <linearGradient id="rg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#7A3830"/>
+      <stop offset="28%"  stop-color="#C87060"/>
+      <stop offset="50%"  stop-color="#F5C0B0"/>
+      <stop offset="72%"  stop-color="#C87060"/>
+      <stop offset="100%" stop-color="#7A3830"/>
+    </linearGradient>
+    <linearGradient id="rgh" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%"   stop-color="#E8A090" stop-opacity="0"/>
+      <stop offset="50%"  stop-color="#FFE0D8" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#E8A090" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="rgpost" cx="40%" cy="35%" r="60%">
+      <stop offset="0%"   stop-color="#FFD8C8"/>
+      <stop offset="100%" stop-color="#8B3020"/>
+    </radialGradient>
+    <filter id="sh2">
+      <feDropShadow dx="3" dy="5" stdDeviation="5" flood-color="#000" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+  <ellipse cx="150" cy="22" rx="9" ry="9" fill="url(#rgpost)"/>
+  <rect x="144" y="22" width="12" height="26" rx="4" fill="url(#rg)"/>
+  <circle cx="153" cy="228" r="147" fill="none" stroke="rgba(0,0,0,0.15)" stroke-width="32"/>
+  <circle cx="150" cy="225" r="145" fill="none" stroke="url(#rg)" stroke-width="26" filter="url(#sh2)"/>
+  <circle cx="150" cy="225" r="145" fill="none" stroke="#5C2018" stroke-width="2.5"/>
+  <path d="M 100 85 A 145 145 0 0 1 200 85" fill="none" stroke="url(#rgh)" stroke-width="10" stroke-linecap="round"/>
+  <path d="M 295 185 A 145 145 0 0 1 295 265" fill="none" stroke="rgba(255,200,180,0.4)" stroke-width="7" stroke-linecap="round"/>
+</svg>

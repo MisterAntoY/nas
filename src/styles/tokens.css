@@ -1,41 +1,71 @@
 :root {
-  /* ─── Cores ─────────────────────────────────────────────── */
-  --color-bg: #f6f6f6;
-  --color-surface: #ffffff;
-  --color-surface-subtle: #fafafa;
-  --color-canvas-bg: #f4f4f4;
+  /* ─── Fundo e superfícies ────────────────────────────────── */
+  --color-bg: #F5F2EE;
+  --color-surface: #FFFFFF;
+  --color-surface-subtle: #FAF8F5;
+  --color-canvas-bg: #EDEAE6;
 
-  --color-border: #dddddd;
-  --color-border-subtle: #eeeeee;
+  /* ─── Bordas ─────────────────────────────────────────────── */
+  --color-border: #E4DDD6;
+  --color-border-subtle: #EDE8E3;
 
-  --color-text: #111111;
-  --color-text-muted: #555555;
-  --color-text-hint: #666666;
+  /* ─── Texto ──────────────────────────────────────────────── */
+  --color-text: #1C1814;
+  --color-text-secondary: #6B6258;
+  --color-text-hint: #9E968E;
 
-  --color-primary: #111111;
-  --color-primary-fg: #ffffff;
+  /* ─── Accent dourado (joalharia) ─────────────────────────── */
+  --color-accent: #C49A30;
+  --color-accent-fg: #FFFFFF;
+  --color-accent-light: #F5EDD4;
+  --color-accent-muted: #DBC98A;
 
-  --color-success: #00bb55;
-  --color-success-fg: #ffffff;
+  /* ─── Acção principal ────────────────────────────────────── */
+  --color-primary: #1C1814;
+  --color-primary-fg: #FFFFFF;
+  --color-primary-hover: #2E2820;
+
+  /* ─── Sucesso ────────────────────────────────────────────── */
+  --color-success: #1A7A4B;
+  --color-success-fg: #FFFFFF;
+  --color-success-light: #D4EDDF;
+
+  /* ─── Erro ───────────────────────────────────────────────── */
+  --color-error: #C0392B;
+  --color-error-light: #FDECEA;
 
   /* ─── Border radius ──────────────────────────────────────── */
-  --radius-sm: 10px;
+  --radius-xs: 6px;
+  --radius-sm: 8px;
   --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
   --radius-pill: 999px;
 
   /* ─── Espaçamento ────────────────────────────────────────── */
-  --space-xs: 6px;
+  --space-xs: 4px;
   --space-sm: 8px;
-  --space-md: 12px;
-  --space-lg: 16px;
-  --space-xl: 20px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
 
   /* ─── Tipografia ─────────────────────────────────────────── */
-  --text-xs: 12px;
-  --text-sm: 13px;
+  --text-xs: 11px;
+  --text-sm: 12px;
   --text-base: 14px;
+  --text-md: 15px;
   --text-lg: 18px;
+  --text-xl: 22px;
+
+  /* ─── Sombras ────────────────────────────────────────────── */
+  --shadow-xs: 0 1px 2px rgba(28, 24, 20, 0.06);
+  --shadow-sm: 0 1px 6px rgba(28, 24, 20, 0.07), 0 1px 2px rgba(28, 24, 20, 0.04);
+  --shadow-md: 0 4px 16px rgba(28, 24, 20, 0.08), 0 2px 4px rgba(28, 24, 20, 0.04);
+  --shadow-lg: 0 8px 32px rgba(28, 24, 20, 0.10), 0 4px 8px rgba(28, 24, 20, 0.05);
+  --shadow-accent: 0 0 0 3px var(--color-accent-light);
 
   /* ─── Transições ─────────────────────────────────────────── */
   --transition-fast: 150ms ease;
+  --transition-base: 200ms ease;
+  --transition-slow: 300ms ease;
 }
