@@ -1,0 +1,254 @@
+{
+  ".claude/settings.json": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8882906,
+    "ast_hash": "76af9e18541d9c1662e26c2b181a0978",
+    "semantic_hash": ""
+  },
+  "eslint.config.js": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8882966,
+    "ast_hash": "4da61c1a61f648d453bb6aab7da5b132",
+    "semantic_hash": ""
+  },
+  "package.json": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8882995,
+    "ast_hash": "dfcc2588ad535c6efa9885b887e44bca",
+    "semantic_hash": ""
+  },
+  "src/App.tsx": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8883023,
+    "ast_hash": "c59cd5ae2cd351e08e364b7ea9b02dae",
+    "semantic_hash": ""
+  },
+  "src/components/EarringGallery/EarringGallery.tsx": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8883047,
+    "ast_hash": "e54be864ff0e0f49c073f03dc3d893b9",
+    "semantic_hash": ""
+  },
+  "src/components/ErrorBoundary/ErrorBoundary.tsx": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8883066,
+    "ast_hash": "9938b57c125f98f7703aa0797d96c1f3",
+    "semantic_hash": ""
+  },
+  "src/components/Hero/Hero.tsx": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8883092,
+    "ast_hash": "f0aa2ab5c4680969f87c4f57ef8b3ead",
+    "semantic_hash": ""
+  },
+  "src/components/OptionsPanel/OptionsPanel.tsx": {
+    "mtime": 1793169454.9938347,
+    "seen": 1793169455.8883128,
+    "ast_hash": "dbfae9421a6b3831ced7685e949f4602",
+    "semantic_hash": ""
+  },
+  "src/components/PreviewCanvas/PreviewCanvas.tsx": {
+    "mtime": 1793169454.9938347,
+    "seen": 1793169455.8883157,
+    "ast_hash": "29a099f771c41f48985678572db2bd6c",
+    "semantic_hash": ""
+  },
+  "src/components/Toast/Toast.tsx": {
+    "mtime": 1793169454.9938347,
+    "seen": 1793169455.8883176,
+    "ast_hash": "00192168f31053c4792dc96694fbad07",
+    "semantic_hash": ""
+  },
+  "src/components/Upload/Upload.tsx": {
+    "mtime": 1793169454.9938347,
+    "seen": 1793169455.8883197,
+    "ast_hash": "95ea9e562acf45c498c7bf5230db2942",
+    "semantic_hash": ""
+  },
+  "src/config/mediapipe.ts": {
+    "mtime": 1793169454.9938347,
+    "seen": 1793169455.8883224,
+    "ast_hash": "fbcdf0043091beb3ebf01048a4d69bc7",
+    "semantic_hash": ""
+  },
+  "src/data/earrings.ts": {
+    "mtime": 1793169454.9938347,
+    "seen": 1793169455.8883243,
+    "ast_hash": "84a67e9ce318c4395046aabc2cb7811f",
+    "semantic_hash": ""
+  },
+  "src/hooks/useLandmarkerStatus.ts": {
+    "mtime": 1793169454.9938347,
+    "seen": 1793169455.8883262,
+    "ast_hash": "c27929e68e431abc873d610e4b341d4d",
+    "semantic_hash": ""
+  },
+  "src/main.tsx": {
+    "mtime": 1793169454.9938347,
+    "seen": 1793169455.8883278,
+    "ast_hash": "610a631cf8b1be9379569108ce1c8c6d",
+    "semantic_hash": ""
+  },
+  "src/types/index.ts": {
+    "mtime": 1793169454.9938347,
+    "seen": 1793169455.8883297,
+    "ast_hash": "e2ad84b0baf7340ccf78cef9ca5f48b6",
+    "semantic_hash": ""
+  },
+  "src/utils/face.ts": {
+    "mtime": 1793169454.9938347,
+    "seen": 1793169455.888332,
+    "ast_hash": "183518be1a87260d792b4b4cfc7c3586",
+    "semantic_hash": ""
+  },
+  "src/utils/image.ts": {
+    "mtime": 1793169454.9938347,
+    "seen": 1793169455.8883336,
+    "ast_hash": "e509522c4e4131a198cc8cb47a8921cb",
+    "semantic_hash": ""
+  },
+  "src/utils/render.ts": {
+    "mtime": 1793169454.9938347,
+    "seen": 1793169455.8883355,
+    "ast_hash": "7c94e630ea72bfe35447e1ad7d0a1bdc",
+    "semantic_hash": ""
+  },
+  "src/vite-env.d.ts": {
+    "mtime": 1793169454.9938347,
+    "seen": 1793169455.8883379,
+    "ast_hash": "b2c77b40ae8ed1e47f6a04b8cf9d3458",
+    "semantic_hash": ""
+  },
+  "tsconfig.app.json": {
+    "mtime": 1793169454.9938347,
+    "seen": 1793169455.8883398,
+    "ast_hash": "11d66e220d58eb0b7e6eb0f7390c1904",
+    "semantic_hash": ""
+  },
+  "tsconfig.json": {
+    "mtime": 1793169454.9938347,
+    "seen": 1793169455.8883414,
+    "ast_hash": "a3d39fa780ebff65444de257f291ce6c",
+    "semantic_hash": ""
+  },
+  "tsconfig.node.json": {
+    "mtime": 1793169454.9938347,
+    "seen": 1793169455.888344,
+    "ast_hash": "b84a00cad3da1546ce9db508961f650b",
+    "semantic_hash": ""
+  },
+  "vite.config.ts": {
+    "mtime": 1793169454.9938347,
+    "seen": 1793169455.8883462,
+    "ast_hash": "77f205a954c93a7cca789b9588500711",
+    "semantic_hash": ""
+  },
+  "README.md": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8883476,
+    "ast_hash": "f20515a93b50315cff7f75217c968b48",
+    "semantic_hash": ""
+  },
+  "STRATEGY.md": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8883495,
+    "ast_hash": "a6879027d5a43aa2c9e6fd053fc7db95",
+    "semantic_hash": ""
+  },
+  "index.html": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8883514,
+    "ast_hash": "f0df452a6952338f37148901d03e8497",
+    "semantic_hash": ""
+  },
+  "public/earrings/chandelier_gold.svg": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8883533,
+    "ast_hash": "c2363cec04116783418bb08d755e6b61",
+    "semantic_hash": ""
+  },
+  "public/earrings/drop_emerald.svg": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.888355,
+    "ast_hash": "a31d48b4f0cb7703a16bf79188f5658e",
+    "semantic_hash": ""
+  },
+  "public/earrings/drop_pearl.svg": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.888357,
+    "ast_hash": "6b841bacc458f3e566e1387f2b438fa1",
+    "semantic_hash": ""
+  },
+  "public/earrings/drop_sapphire.svg": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8883588,
+    "ast_hash": "d1fcc34e1df2f80419b9bc55c1dacb7e",
+    "semantic_hash": ""
+  },
+  "public/earrings/drop_silver.png": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8883607,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "public/earrings/drop_silver.svg": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8883624,
+    "ast_hash": "e6f29d762e3841469d88728f920f4765",
+    "semantic_hash": ""
+  },
+  "public/earrings/hoop_gold.png": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8883643,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "public/earrings/hoop_gold.svg": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.888366,
+    "ast_hash": "d17c613603c629fe2209abd6595d9259",
+    "semantic_hash": ""
+  },
+  "public/earrings/hoop_rose_gold.svg": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8883681,
+    "ast_hash": "060987c545ca8446d34736ab6562bd8b",
+    "semantic_hash": ""
+  },
+  "public/earrings/huggie_gold.svg": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.88837,
+    "ast_hash": "d5a9498fd06645d4dc85ea83ad641f17",
+    "semantic_hash": ""
+  },
+  "public/earrings/stud_coral.svg": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8883717,
+    "ast_hash": "31f2546f4971ac6a7333cd25fc234a2b",
+    "semantic_hash": ""
+  },
+  "public/earrings/stud_diamond.svg": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8883736,
+    "ast_hash": "aba2f4fec5bbc14766471e39849b4cc0",
+    "semantic_hash": ""
+  },
+  "public/earrings/stud_pearl.png": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8883753,
+    "ast_hash": "d41d8cd98f00b204e9800998ecf8427e",
+    "semantic_hash": ""
+  },
+  "public/earrings/stud_pearl.svg": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8883767,
+    "ast_hash": "57bfceb5475c9aed57d63a349e96b1a2",
+    "semantic_hash": ""
+  },
+  "package-lock.json": {
+    "mtime": 1793169454.9898348,
+    "seen": 1793169455.8883789,
+    "ast_hash": "118471729f52f566f205e0f32ceb72f1",
+    "semantic_hash": ""
+  }
+}

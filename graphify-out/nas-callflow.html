@@ -1,0 +1,2658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>nas — Complete Call Flow &amp; Architecture Documentation</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --bg: #0f172a; --surface: #1e293b; --border: #334155;
+  --text: #e2e8f0; --muted: #94a3b8; --accent: #38bdf8;
+  --warn: #fbbf24; --err: #f87171; --ok: #34d399;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+.container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+h1 { font-size: 2.4rem; margin-bottom: 8px; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+h2 { font-size: 1.7rem; margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); }
+h3 { font-size: 1.25rem; margin: 32px 0 12px; color: var(--accent); }
+h4 { font-size: 1.05rem; margin: 20px 0 8px; color: var(--warn); }
+p { margin: 8px 0; color: var(--muted); }
+.subtitle { color: var(--muted); font-size: 1.1rem; margin-bottom: 32px; }
+.mermaid { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 20px 0; overflow-x: auto; position: relative; }
+.mermaid.is-enhanced { padding: 0; overflow: hidden; min-height: 260px; }
+.mermaid-viewport { padding: 54px 24px 24px; overflow: hidden; cursor: grab; touch-action: none; min-height: 260px; }
+.mermaid-viewport.is-dragging { cursor: grabbing; }
+.mermaid-viewport svg { max-width: none !important; height: auto; transform-origin: 0 0; transition: transform 120ms ease; }
+.mermaid-toolbar { position: absolute; top: 10px; right: 10px; z-index: 3; display: flex; align-items: center; gap: 6px; padding: 6px; background: rgba(15,23,42,0.92); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.28); }
+.mermaid-toolbar button, .mermaid-toolbar .zoom-level { height: 28px; min-width: 32px; border: 1px solid var(--border); border-radius: 6px; background: #1e293b; color: var(--text); font: 600 0.78rem system-ui, sans-serif; display: inline-flex; align-items: center; justify-content: center; }
+.mermaid-toolbar button { cursor: pointer; }
+.mermaid-toolbar button:hover { border-color: var(--accent); color: var(--accent); }
+.mermaid-toolbar .zoom-level { min-width: 52px; color: var(--muted); background: transparent; }
+.call-table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.92rem; }
+.call-table th { background: #1a2744; color: var(--accent); text-align: left; padding: 10px 14px; border: 1px solid var(--border); }
+.call-table td { padding: 8px 14px; border: 1px solid var(--border); vertical-align: top; }
+.call-table tr:nth-child(even) { background: rgba(255,255,255,0.02); }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+.tag-async { background: #7c3aed33; color: #a78bfa; }
+.tag-class { background: #05966933; color: var(--ok); }
+.tag-func { background: #2563eb33; color: var(--accent); }
+.tag-cmd { background: #d9770633; color: var(--warn); }
+.tag-endpoint { background: #dc262633; color: var(--err); }
+.tag-hook { background: #db277733; color: #f472b6; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; margin: 16px 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; margin: 16px 0; }
+.arrow-chain { font-family: 'Fira Code', monospace; font-size: 0.85rem; color: var(--accent); padding: 10px; background: rgba(56,189,248,0.06); border-radius: 6px; }
+code { font-family: 'Fira Code', 'Cascadia Code', monospace; background: rgba(255,255,255,0.06); padding: 1px 6px; border-radius: 3px; font-size: 0.88em; }
+ul, ol { margin: 8px 0 8px 24px; color: var(--muted); }
+li { margin: 4px 0; }
+a { color: var(--accent); }
+hr { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+.nav { position: sticky; top: 0; background: var(--bg); z-index: 10; padding: 12px 0; border-bottom: 1px solid var(--border); display: flex; gap: 20px; flex-wrap: wrap; font-size: 0.9rem; }
+.nav a { text-decoration: none; }
+.nav a:hover { text-decoration: underline; }
+@media (max-width: 768px) { .container { padding: 16px; } h1 { font-size: 1.8rem; } }
+
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>nas — Complete Call Flow &amp; Architecture Documentation</h1>
+<p class="subtitle">Generated from graphify knowledge graph: 243 nodes, 348 edges, 13 communities. Commit: 07708e9</p>
+
+<div class="nav">
+    <a href="#overview">Architecture Overview</a>
+    <a href="#build-graph">Graph Build</a>
+    <a href="#serve-api">Serving API</a>
+    <a href="#utils-facets-previewcanvas">Utils Facets Previewcanvas</a>
+    <a href="#strategymd-fase-modelo">Strategymd Fase Modelo</a>
+    <a href="#readmemd-adicionar-brincos">Readmemd Adicionar Brincos</a>
+    <a href="#strategymd-meses-prazo">Strategymd Meses Prazo</a>
+    <a href="#strategymd-renderiza-o-melhorias">Strategymd Renderização Melhorias</a>
+    <a href="#errorboundary-errorboundarytsx-components">Errorboundary Errorboundarytsx Components</a>
+    <a href="#ref-eslint-eslintconfigjs">Ref Eslint Eslintconfigjs</a>
+    <a href="#vite-envdts-importmeta">Vite Envdts Importmeta</a>
+</div>
+
+<!-- ====== Architecture Overview ====== -->
+<h2 id="overview">1. Architecture Overview</h2>
+
+<div class="mermaid">
+
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    BUILD_GRAPH_321CBB04("Graph Build<br/><small>71 nodes</small>")
+    class BUILD_GRAPH_321CBB04 module;
+    SERVE_API_35EC8E86("Serving API<br/><small>39 nodes</small>")
+    class SERVE_API_35EC8E86 module;
+    UTILS_FACETS_PREVIEWCANVAS_EC904362("Utils Facets Previewcanvas<br/><small>41 nodes</small>")
+    class UTILS_FACETS_PREVIEWCANVAS_EC904362 module;
+    STRATEGYMD_FASE_MODELO_FC3F79D4("Strategymd Fase Modelo<br/><small>34 nodes</small>")
+    class STRATEGYMD_FASE_MODELO_FC3F79D4 module;
+    READMEMD_ADICIONAR_BRINCOS_F51348F0("Readmemd Adicionar Brincos<br/><small>15 nodes</small>")
+    class READMEMD_ADICIONAR_BRINCOS_F51348F0 module;
+    STRATEGYMD_MESES_PRAZO_F1F9C8D1("Strategymd Meses Prazo<br/><small>15 nodes</small>")
+    class STRATEGYMD_MESES_PRAZO_F1F9C8D1 module;
+    STRATEGYMD_RENDERIZA_O_MELHORIAS_90EF79D4("Strategymd Renderização Melhorias<br/><small>13 nodes</small>")
+    class STRATEGYMD_RENDERIZA_O_MELHORIAS_90EF79D4 module;
+    ERRORBOUNDARY_ERRORBOUNDARYTSX_COMPONENTS_38E0BD5A("Errorboundary Errorboundarytsx Components<br/><small>7 nodes</small>")
+    class ERRORBOUNDARY_ERRORBOUNDARYTSX_COMPONENTS_38E0BD5A module;
+    REF_ESLINT_ESLINTCONFIGJS_1C9C10F4("Ref Eslint Eslintconfigjs<br/><small>5 nodes</small>")
+    class REF_ESLINT_ESLINTCONFIGJS_1C9C10F4 module;
+    VITE_ENVDTS_IMPORTMETA_9A88C397("Vite Envdts Importmeta<br/><small>3 nodes</small>")
+    class VITE_ENVDTS_IMPORTMETA_9A88C397 module;
+    SERVE_API_35EC8E86 -->|imports x17| UTILS_FACETS_PREVIEWCANVAS_EC904362
+    SERVE_API_35EC8E86 -->|calls x3| ERRORBOUNDARY_ERRORBOUNDARYTSX_COMPONENTS_38E0BD5A
+    UTILS_FACETS_PREVIEWCANVAS_EC904362 -->|imports x3| BUILD_GRAPH_321CBB04
+    SERVE_API_35EC8E86 -->|imports x3| BUILD_GRAPH_321CBB04
+    BUILD_GRAPH_321CBB04 -->|imports x2| SERVE_API_35EC8E86
+    UTILS_FACETS_PREVIEWCANVAS_EC904362 -->|contains| SERVE_API_35EC8E86
+    REF_ESLINT_ESLINTCONFIGJS_1C9C10F4 -->|imports| BUILD_GRAPH_321CBB04
+    STRATEGYMD_FASE_MODELO_FC3F79D4 -->|contains| STRATEGYMD_RENDERIZA_O_MELHORIAS_90EF79D4
+    STRATEGYMD_FASE_MODELO_FC3F79D4 -->|contains| STRATEGYMD_MESES_PRAZO_F1F9C8D1
+    READMEMD_ADICIONAR_BRINCOS_F51348F0 -->|contains| UTILS_FACETS_PREVIEWCANVAS_EC904362
+    READMEMD_ADICIONAR_BRINCOS_F51348F0 -->|contains| SERVE_API_35EC8E86
+    ERRORBOUNDARY_ERRORBOUNDARYTSX_COMPONENTS_38E0BD5A -->|imports| BUILD_GRAPH_321CBB04
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<div class="grid">
+  <div class="card">
+    <h4>Architecture Layers</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>Layer</th><th>Nodes</th><th>Communities</th></tr>
+      <tr><td>Graph Build</td><td>71</td><td><code>2, 4, 8, 12</code></td></tr><tr><td>Serving API</td><td>39</td><td><code>1</code></td></tr><tr><td>Utils Facets Previewcanvas</td><td>41</td><td><code>0</code></td></tr><tr><td>Strategymd Fase Modelo</td><td>34</td><td><code>3</code></td></tr><tr><td>Readmemd Adicionar Brincos</td><td>15</td><td><code>5</code></td></tr><tr><td>Strategymd Meses Prazo</td><td>15</td><td><code>6</code></td></tr><tr><td>Strategymd Renderização Melhorias</td><td>13</td><td><code>7</code></td></tr><tr><td>Errorboundary Errorboundarytsx Components</td><td>7</td><td><code>9</code></td></tr><tr><td>Ref Eslint Eslintconfigjs</td><td>5</td><td><code>10</code></td></tr><tr><td>Vite Envdts Importmeta</td><td>3</td><td><code>11</code></td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Core Flow</h4>
+    <div class="arrow-chain">Strategymd Fase Modelo -&gt; Strategymd Renderização Melhorias -&gt; Graph Build -&gt; Serving API -&gt; Utils Facets Previewcanvas -&gt; Readmemd Adicionar Brincos -&gt; Strategymd Meses Prazo</div>
+  </div>
+</div>
+<div class="grid">
+  <div class="card">
+    <h4>Graph Report Highlights</h4>
+    <ul>
+      <li>243 nodes · 348 edges · 13 communities (10 shown, 3 thin omitted)</li>
+      <li>Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 4 edges (avg confidence: 0.9)</li>
+      <li>Token cost: 0 input · 0 output</li>
+      <li>1. `compilerOptions` - 17 edges</li>
+      <li>2. `App()` - 14 edges</li>
+      <li>3. `Virtual Earring Try-On` - 14 edges</li>
+    </ul>
+  </div>
+</div>
+<hr>
+<!-- ====== 2. Graph Build ====== -->
+<h2 id="build-graph">2. Graph Build</h2>
+<p>Graph Build groups implementation around packagejson, tsconfigappjson, tsconfignodejson, react, mostly in package.json, tsconfig.app.json, tsconfig.node.json. This section covers 71 nodes and 78 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Graph Build (71 nodes, 78 edges)
+    subgraph build_graph_package_json_4e40bfbd["package.json"]
+        package_582681c2("package.json")
+        ref_mediapipe_tasks_vision_5bd8f0f7("@mediapipe/tasks-vision<br/><small>package.json</small>")
+        ref_react_47bfb9fb("react<br/><small>package.json</small>")
+        ref_react_dom_61ea372d("react-dom<br/><small>package.json</small>")
+        ref_types_react_1bb250f2("@types/react<br/><small>package.json</small>")
+        ref_types_react_dom_2cfa9575("@types/react-dom<br/><small>package.json</small>")
+        ref_vitejs_plugin_react_2811e448("@vitejs/plugin-react<br/><small>package.json</small>")
+        ref_typescript_d5a01309("typescript<br/><small>package.json</small>")
+        ref_typescript_eslint_8e22e9b7("typescript-eslint<br/><small>package.json</small>")
+        ref_vite_c95c70db("vite<br/><small>package.json</small>")
+        package_dependencies_mediapipe_tasks_vision_0340f887("@mediapipe/tasks-vision@^0.10.20<br/><small>package.json</small>")
+        package_devdependencies_types_react_dom_92a9fdd8("@types/react-dom@^19.2.3<br/><small>package.json</small>")
+        package_devdependencies_types_react_327092bf("@types/react@^19.2.14<br/><small>package.json</small>")
+        package_devdependencies_vitejs_plugin_react_f76e70ae("@vitejs/plugin-react@^4.3.1<br/><small>package.json</small>")
+    end
+    subgraph build_graph_External_generated_653891f5["External / generated"]
+        src_index_811cdc82("src_index")
+        ref_node_url_a44e0198("ref_node_url")
+    end
+    src_main_3231ff52("main.tsx")
+    vite_config_433f92aa("vite.config.ts")
+    package_582681c2 -->|imports| ref_mediapipe_tasks_vision_5bd8f0f7
+    package_582681c2 -->|imports| ref_react_47bfb9fb
+    package_582681c2 -->|imports| ref_react_dom_61ea372d
+    package_582681c2 -->|imports| ref_types_react_1bb250f2
+    package_582681c2 -->|imports| ref_types_react_dom_2cfa9575
+    package_582681c2 -->|imports| ref_vitejs_plugin_react_2811e448
+    package_582681c2 -->|imports| ref_typescript_d5a01309
+    package_582681c2 -->|imports| ref_typescript_eslint_8e22e9b7
+    package_582681c2 -->|imports| ref_vite_c95c70db
+    src_main_3231ff52 -->|imports| ref_react_47bfb9fb
+    src_main_3231ff52 -->|imports| ref_react_dom_61ea372d
+    src_main_3231ff52 -->|imports| src_index_811cdc82
+    vite_config_433f92aa -->|imports| ref_vite_c95c70db
+    vite_config_433f92aa -->|imports| ref_vitejs_plugin_react_2811e448
+    vite_config_433f92aa -->|imports| ref_node_url_a44e0198
+    %% Omitted for readability: 53 nodes, 0 edges
+    class package_582681c2 function;
+    class ref_mediapipe_tasks_vision_5bd8f0f7 api;
+    class ref_react_47bfb9fb function;
+    class ref_react_dom_61ea372d function;
+    class ref_types_react_1bb250f2 function;
+    class ref_types_react_dom_2cfa9575 function;
+    class ref_vitejs_plugin_react_2811e448 function;
+    class ref_typescript_d5a01309 function;
+    class ref_typescript_eslint_8e22e9b7 function;
+    class ref_vite_c95c70db function;
+    class package_dependencies_mediapipe_tasks_vision_0340f887 api;
+    class package_devdependencies_types_react_dom_92a9fdd8 function;
+    class package_devdependencies_types_react_327092bf function;
+    class package_devdependencies_vitejs_plugin_react_f76e70ae function;
+    class src_index_811cdc82 function;
+    class ref_node_url_a44e0198 function;
+    class src_main_3231ff52 ui;
+    class vite_config_433f92aa module;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>package.json</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>@mediapipe/tasks-vision</code><br><small style="color:var(--muted)">package.json</small><br><code>@types/react</code><br><small style="color:var(--muted)">package.json</small><br><code>@types/react-dom</code><br><small style="color:var(--muted)">package.json</small><br>+6 more</td>
+  <td>package.json node in package.json.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>dependencies</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>dependencies node in package.json.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>@mediapipe/tasks-vision@^0.10.20</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-endpoint">API</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>@mediapipe/tasks-vision@^0.10.20 node in package.json.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>react@^18.3.1</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>react@^18.3.1 node in package.json.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>react-dom@^18.3.1</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>react-dom@^18.3.1 node in package.json.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>devDependencies</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>devDependencies node in package.json.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>@types/react@^19.2.14</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>@types/react@^19.2.14 node in package.json.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>@types/react-dom@^19.2.3</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>@types/react-dom@^19.2.3 node in package.json.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>typescript@^6.0.3</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>typescript@^6.0.3 node in package.json.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>typescript-eslint@^8.59.3</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>typescript-eslint@^8.59.3 node in package.json.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>vite@^5.4.2</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>vite@^5.4.2 node in package.json.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>@vitejs/plugin-react@^4.3.1</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>@vitejs/plugin-react@^4.3.1 node in package.json.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>name</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>name node in package.json.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>private</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>private node in package.json.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>scripts</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>scripts node in package.json.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>build</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>build node in package.json.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>dev</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>dev node in package.json.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>lint</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>lint node in package.json.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>preview</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>preview node in package.json.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>type-check</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>type-check node in package.json.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>type</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>type node in package.json.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>version</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>version node in package.json.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>main.tsx</code><br><small style="color:var(--muted)">src/main.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>App()</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>react</code><br><small style="color:var(--muted)">package.json</small><br>+2 more</td>
+  <td>Module file in src/main.tsx.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>root</code><br><small style="color:var(--muted)">src/main.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>root node in src/main.tsx.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>vite.config.ts</code><br><small style="color:var(--muted)">vite.config.ts</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>@vitejs/plugin-react</code><br><small style="color:var(--muted)">package.json</small><br><code>ref_node_url</code><br><code>vite</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td>Module file in vite.config.ts.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>@mediapipe/tasks-vision</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-endpoint">API</span></td>
+  <td><code>face.ts</code><br><small style="color:var(--muted)">src/utils/face.ts</small><br><code>package.json</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td>No direct outbound edge</td>
+  <td>@mediapipe/tasks-vision node in package.json.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>react</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>ErrorBoundary.tsx</code><br><small style="color:var(--muted)">components/ErrorBoundary/ErrorBoundary.tsx</small><br><code>main.tsx</code><br><small style="color:var(--muted)">src/main.tsx</small><br>+5 more</td>
+  <td>No direct outbound edge</td>
+  <td>react node in package.json.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>react-dom</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>main.tsx</code><br><small style="color:var(--muted)">src/main.tsx</small><br><code>package.json</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td>No direct outbound edge</td>
+  <td>react-dom node in package.json.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>@types/react</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>package.json</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td>No direct outbound edge</td>
+  <td>@types/react node in package.json.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>@types/react-dom</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>package.json</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td>No direct outbound edge</td>
+  <td>@types/react-dom node in package.json.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>package.json</code></td><td>31 nodes</td></tr>
+<tr><td><code>tsconfig.app.json</code></td><td>19 nodes</td></tr>
+<tr><td><code>tsconfig.node.json</code></td><td>13 nodes</td></tr>
+<tr><td><code>tsconfig.json</code></td><td>3 nodes</td></tr>
+<tr><td><code>src/main.tsx</code></td><td>2 nodes</td></tr>
+<tr><td><code>vite.config.ts</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x54, imports x9, declares x9, imports x6. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 3. Serving API ====== -->
+<h2 id="serve-api">3. Serving API</h2>
+<p>Serving API groups implementation around components, toast, toasttsx, upload, mostly in components/Toast/Toast.tsx, components/Upload/Upload.tsx, components/EarringGallery/EarringGallery.tsx. This section covers 39 nodes and 59 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Serving API (39 nodes, 59 edges)
+    subgraph serve_api_components_Toast_Toast_tsx_f826c825["components/Toast/Toast.tsx"]
+        src_components_toast_toast_toastcontainer_00cc04d1("ToastContainer()<br/><small>components/Toast/Toast.tsx</small>")
+        src_components_toast_toast_usetoast_1afbf837("useToast()<br/><small>components/Toast/Toast.tsx</small>")
+        src_components_toast_toast_usetoast_addtoast_bfdec4db("addToast()<br/><small>components/Toast/Toast.tsx</small>")
+        src_components_toast_toast_toastitem_0c7c41d2("ToastItem()<br/><small>components/Toast/Toast.tsx</small>")
+    end
+    subgraph serve_api_src_App_tsx_08ab7f2f["src/App.tsx"]
+        src_app_46efd68e("App.tsx")
+        src_app_app_f316b20d("App()<br/><small>src/App.tsx</small>")
+        src_app_app_handledownload_f135c86c("handleDownload()<br/><small>src/App.tsx</small>")
+        src_app_app_handleresult_e450368e("handleResult()<br/><small>src/App.tsx</small>")
+    end
+    subgraph serve_api_components_EarringGallery_EarringGalle_80d5b723["components/EarringGallery/EarringGallery.tsx"]
+        src_components_earringgallery_earringgallery_629fbc6b("EarringGallery.tsx")
+        src_components_earringgallery_earringgallery_ear_21523dda("EarringGallery()<br/><small>components/EarringGallery/EarringGallery.tsx</small>")
+        src_components_earringgallery_earringgallery_che_7ccaa6ab("CheckIcon()<br/><small>components/EarringGallery/EarringGallery.tsx</small>")
+    end
+    subgraph serve_api_components_Upload_Upload_tsx_35ebe50b["components/Upload/Upload.tsx"]
+        src_components_upload_upload_upload_74468e93("Upload()<br/><small>components/Upload/Upload.tsx</small>")
+        src_components_upload_upload_checkicon_85e8fce7("CheckIcon()<br/><small>components/Upload/Upload.tsx</small>")
+        src_components_upload_upload_uploadicon_ec79e531("UploadIcon()<br/><small>components/Upload/Upload.tsx</small>")
+    end
+    src_components_hero_hero_hero_8ec5f63f("Hero()<br/><small>components/Hero/Hero.tsx</small>")
+    src_components_optionspanel_optionspanel_options_4e80df33("OptionsPanel()<br/><small>components/OptionsPanel/OptionsPanel.tsx</small>")
+    src_data_earrings_earrings_a9c174ca("earrings<br/><small>src/data/earrings.ts</small>")
+    src_utils_render_exportcanvastodownload_29ae7f6d("exportCanvasToDownload()<br/><small>src/utils/render.ts</small>")
+    src_app_app_f316b20d -->|calls| src_components_toast_toast_toastcontainer_00cc04d1
+    src_app_app_f316b20d -->|calls| src_components_toast_toast_usetoast_1afbf837
+    src_app_app_f316b20d -->|calls| src_utils_render_exportcanvastodownload_29ae7f6d
+    src_app_app_f316b20d -->|calls| src_components_hero_hero_hero_8ec5f63f
+    src_app_app_f316b20d -->|calls| src_components_upload_upload_upload_74468e93
+    src_app_app_f316b20d -->|calls| src_components_earringgallery_earringgallery_ear_21523dda
+    src_app_app_f316b20d -->|calls| src_components_optionspanel_optionspanel_options_4e80df33
+    src_app_app_handledownload_f135c86c -->|calls| src_utils_render_exportcanvastodownload_29ae7f6d
+    src_app_app_handledownload_f135c86c -->|calls| src_components_toast_toast_usetoast_addtoast_bfdec4db
+    src_app_app_handleresult_e450368e -->|calls| src_components_toast_toast_usetoast_addtoast_bfdec4db
+    src_components_earringgallery_earringgallery_ear_21523dda -->|calls| src_components_earringgallery_earringgallery_che_7ccaa6ab
+    src_components_toast_toast_toastcontainer_00cc04d1 -->|calls| src_components_toast_toast_toastitem_0c7c41d2
+    src_components_upload_upload_upload_74468e93 -->|calls| src_components_upload_upload_checkicon_85e8fce7
+    src_components_upload_upload_upload_74468e93 -->|calls| src_components_upload_upload_uploadicon_ec79e531
+    src_app_46efd68e -->|imports| src_utils_render_exportcanvastodownload_29ae7f6d
+    src_app_46efd68e -->|imports| src_components_upload_upload_upload_74468e93
+    src_app_46efd68e -->|imports| src_components_earringgallery_earringgallery_ear_21523dda
+    src_app_46efd68e -->|imports| src_components_optionspanel_optionspanel_options_4e80df33
+    src_app_46efd68e -->|imports| src_components_hero_hero_hero_8ec5f63f
+    src_app_46efd68e -->|imports| src_components_toast_toast_toastcontainer_00cc04d1
+    src_app_46efd68e -->|imports| src_components_toast_toast_usetoast_1afbf837
+    src_app_46efd68e -->|imports| src_data_earrings_earrings_a9c174ca
+    src_app_46efd68e -->|imports| src_components_earringgallery_earringgallery_629fbc6b
+    %% Omitted for readability: 21 nodes, 0 edges
+    class src_components_toast_toast_toastcontainer_00cc04d1 ui;
+    class src_components_toast_toast_usetoast_1afbf837 ui;
+    class src_components_toast_toast_usetoast_addtoast_bfdec4db ui;
+    class src_components_toast_toast_toastitem_0c7c41d2 ui;
+    class src_app_46efd68e ui;
+    class src_app_app_f316b20d ui;
+    class src_app_app_handledownload_f135c86c ui;
+    class src_app_app_handleresult_e450368e ui;
+    class src_components_earringgallery_earringgallery_629fbc6b ui;
+    class src_components_earringgallery_earringgallery_ear_21523dda ui;
+    class src_components_earringgallery_earringgallery_che_7ccaa6ab ui;
+    class src_components_upload_upload_upload_74468e93 ui;
+    class src_components_upload_upload_checkicon_85e8fce7 ui;
+    class src_components_upload_upload_uploadicon_ec79e531 ui;
+    class src_components_hero_hero_hero_8ec5f63f ui;
+    class src_components_optionspanel_optionspanel_options_4e80df33 ui;
+    class src_data_earrings_earrings_a9c174ca function;
+    class src_utils_render_exportcanvastodownload_29ae7f6d function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>EarringGalleryProps</code><br><small style="color:var(--muted)">components/EarringGallery/EarringGallery.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>EarringGalleryProps node in components/EarringGallery/EarringGallery.tsx.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>HeroProps</code><br><small style="color:var(--muted)">components/Hero/Hero.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>HeroProps node in components/Hero/Hero.tsx.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>OptionsPanelProps</code><br><small style="color:var(--muted)">components/OptionsPanel/OptionsPanel.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>OptionsPanelProps node in components/OptionsPanel/OptionsPanel.tsx.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>ToastContainerProps</code><br><small style="color:var(--muted)">components/Toast/Toast.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ToastContainerProps node in components/Toast/Toast.tsx.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>ToastItemProps</code><br><small style="color:var(--muted)">components/Toast/Toast.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ToastItemProps node in components/Toast/Toast.tsx.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>ToastKind</code><br><small style="color:var(--muted)">components/Toast/Toast.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ToastKind node in components/Toast/Toast.tsx.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>ToastMessage</code><br><small style="color:var(--muted)">components/Toast/Toast.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ToastMessage node in components/Toast/Toast.tsx.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>UploadProps</code><br><small style="color:var(--muted)">components/Upload/Upload.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>UploadProps node in components/Upload/Upload.tsx.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>App()</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>main.tsx</code><br><small style="color:var(--muted)">src/main.tsx</small></td>
+  <td><code>EarringGallery()</code><br><small style="color:var(--muted)">components/EarringGallery/EarringGallery.tsx</small><br><code>ErrorBoundary</code><br><small style="color:var(--muted)">components/ErrorBoundary/ErrorBoundary.tsx</small><br><code>exportCanvasToDownload()</code><br><small style="color:var(--muted)">src/utils/render.ts</small><br>+6 more</td>
+  <td>App() node in src/App.tsx.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>handleDownload()</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>addToast()</code><br><small style="color:var(--muted)">components/Toast/Toast.tsx</small><br><code>exportCanvasToDownload()</code><br><small style="color:var(--muted)">src/utils/render.ts</small></td>
+  <td>handleDownload() node in src/App.tsx.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>handleResult()</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>addToast()</code><br><small style="color:var(--muted)">components/Toast/Toast.tsx</small></td>
+  <td>handleResult() node in src/App.tsx.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>CheckIcon()</code><br><small style="color:var(--muted)">components/EarringGallery/EarringGallery.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>EarringGallery()</code><br><small style="color:var(--muted)">components/EarringGallery/EarringGallery.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>CheckIcon() node in components/EarringGallery/EarringGallery.tsx.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>EarringGallery()</code><br><small style="color:var(--muted)">components/EarringGallery/EarringGallery.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App()</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td><code>CheckIcon()</code><br><small style="color:var(--muted)">components/EarringGallery/EarringGallery.tsx</small></td>
+  <td>EarringGallery() node in components/EarringGallery/EarringGallery.tsx.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>Hero()</code><br><small style="color:var(--muted)">components/Hero/Hero.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App()</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>Hero() node in components/Hero/Hero.tsx.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>OptionsPanel()</code><br><small style="color:var(--muted)">components/OptionsPanel/OptionsPanel.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App()</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>OptionsPanel() node in components/OptionsPanel/OptionsPanel.tsx.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>ToastContainer()</code><br><small style="color:var(--muted)">components/Toast/Toast.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App()</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td><code>ToastItem()</code><br><small style="color:var(--muted)">components/Toast/Toast.tsx</small></td>
+  <td>ToastContainer() node in components/Toast/Toast.tsx.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>ToastItem()</code><br><small style="color:var(--muted)">components/Toast/Toast.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>ToastContainer()</code><br><small style="color:var(--muted)">components/Toast/Toast.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>ToastItem() node in components/Toast/Toast.tsx.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>useToast()</code><br><small style="color:var(--muted)">components/Toast/Toast.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App()</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td><code>addToast()</code><br><small style="color:var(--muted)">components/Toast/Toast.tsx</small><br><code>dismiss()</code><br><small style="color:var(--muted)">components/Toast/Toast.tsx</small></td>
+  <td>useToast() node in components/Toast/Toast.tsx.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>addToast()</code><br><small style="color:var(--muted)">components/Toast/Toast.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>handleDownload()</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>handleResult()</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>useToast()</code><br><small style="color:var(--muted)">components/Toast/Toast.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>addToast() node in components/Toast/Toast.tsx.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>dismiss()</code><br><small style="color:var(--muted)">components/Toast/Toast.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>useToast()</code><br><small style="color:var(--muted)">components/Toast/Toast.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>dismiss() node in components/Toast/Toast.tsx.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>CheckIcon()</code><br><small style="color:var(--muted)">components/Upload/Upload.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>Upload()</code><br><small style="color:var(--muted)">components/Upload/Upload.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>CheckIcon() node in components/Upload/Upload.tsx.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>Upload()</code><br><small style="color:var(--muted)">components/Upload/Upload.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App()</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td><code>CheckIcon()</code><br><small style="color:var(--muted)">components/Upload/Upload.tsx</small><br><code>UploadIcon()</code><br><small style="color:var(--muted)">components/Upload/Upload.tsx</small></td>
+  <td>Upload() node in components/Upload/Upload.tsx.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>UploadIcon()</code><br><small style="color:var(--muted)">components/Upload/Upload.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>Upload()</code><br><small style="color:var(--muted)">components/Upload/Upload.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>UploadIcon() node in components/Upload/Upload.tsx.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>exportCanvasToDownload()</code><br><small style="color:var(--muted)">src/utils/render.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>App()</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>handleDownload()</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>Exports documentation data to a target format.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>main.tsx</code><br><small style="color:var(--muted)">src/main.tsx</small></td>
+  <td><code>EarringGallery()</code><br><small style="color:var(--muted)">components/EarringGallery/EarringGallery.tsx</small><br><code>EarringGallery.tsx</code><br><small style="color:var(--muted)">components/EarringGallery/EarringGallery.tsx</small><br><code>earrings</code><br><small style="color:var(--muted)">src/data/earrings.ts</small><br>+23 more</td>
+  <td>Module file in src/App.tsx.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>EarringGallery.tsx</code><br><small style="color:var(--muted)">components/EarringGallery/EarringGallery.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td><code>Earring</code><br><small style="color:var(--muted)">src/types/index.ts</small><br><code>earringgallery earringgallery module</code><br><code>index.ts</code><br><small style="color:var(--muted)">src/types/index.ts</small></td>
+  <td>Module file in components/EarringGallery/EarringGallery.tsx.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>Hero.tsx</code><br><small style="color:var(--muted)">components/Hero/Hero.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td><code>hero hero module</code></td>
+  <td>Module file in components/Hero/Hero.tsx.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>OptionsPanel.tsx</code><br><small style="color:var(--muted)">components/OptionsPanel/OptionsPanel.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td><code>EarringSide</code><br><small style="color:var(--muted)">src/types/index.ts</small><br><code>index.ts</code><br><small style="color:var(--muted)">src/types/index.ts</small><br><code>optionspanel optionspanel module</code></td>
+  <td>Module file in components/OptionsPanel/OptionsPanel.tsx.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>Toast.tsx</code><br><small style="color:var(--muted)">components/Toast/Toast.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td><code>react</code><br><small style="color:var(--muted)">package.json</small><br><code>toast toast module</code></td>
+  <td>Module file in components/Toast/Toast.tsx.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Upload.tsx</code><br><small style="color:var(--muted)">components/Upload/Upload.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td><code>react</code><br><small style="color:var(--muted)">package.json</small><br><code>upload upload module</code></td>
+  <td>Module file in components/Upload/Upload.tsx.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>components/Toast/Toast.tsx</code></td><td>10 nodes</td></tr>
+<tr><td><code>components/Upload/Upload.tsx</code></td><td>5 nodes</td></tr>
+<tr><td><code>src/App.tsx</code></td><td>4 nodes</td></tr>
+<tr><td><code>components/EarringGallery/EarringGallery.tsx</code></td><td>4 nodes</td></tr>
+<tr><td><code>components/Hero/Hero.tsx</code></td><td>3 nodes</td></tr>
+<tr><td><code>components/OptionsPanel/OptionsPanel.tsx</code></td><td>3 nodes</td></tr>
+<tr><td><code>src/data/earrings.ts</code></td><td>2 nodes</td></tr>
+<tr><td><code>README.md</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x22, calls x14, imports x12, imports x8. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 4. Utils Facets Previewcanvas ====== -->
+<h2 id="utils-facets-previewcanvas">4. Utils Facets Previewcanvas</h2>
+<p>Utils Facets Previewcanvas groups implementation around utils, facets, previewcanvas, indexts, mostly in src/utils/face.ts, src/types/index.ts, components/PreviewCanvas/PreviewCanvas.tsx. This section covers 41 nodes and 91 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Utils Facets Previewcanvas (41 nodes, 91 edges)
+    subgraph utils_facets_previewcanvas_src_utils_face_ts_5d6331e3["src/utils/face.ts"]
+        src_utils_face_91d7704a("face.ts")
+        src_utils_face_detectfacedata_768689cc("detectFaceData()<br/><small>src/utils/face.ts</small>")
+        src_utils_face_subscribelandmarkerstatus_e8347412("subscribeLandmarkerStatus()<br/><small>src/utils/face.ts</small>")
+        src_utils_face_getlandmarker_3970af8d("getLandmarker()<br/><small>src/utils/face.ts</small>")
+        src_utils_face_dist_52083766("dist()<br/><small>src/utils/face.ts</small>")
+        src_utils_face_clamp_23dcf917("clamp()<br/><small>src/utils/face.ts</small>")
+        src_utils_face_setstatus_161961da("setStatus()<br/><small>src/utils/face.ts</small>")
+        src_utils_face_warmuplandmarker_1153ecb3("warmupLandmarker()<br/><small>src/utils/face.ts</small>")
+        src_utils_face_degtorad_66683908("degToRad()<br/><small>src/utils/face.ts</small>")
+    end
+    subgraph utils_facets_previewcanvas_src_utils_render_ts_66f77d21["src/utils/render.ts"]
+        src_utils_render_0928076a("render.ts")
+        src_utils_render_rendertryon_aa0ea572("renderTryOn()<br/><small>src/utils/render.ts</small>")
+        src_utils_render_drawcircle_633b50de("drawCircle()<br/><small>src/utils/render.ts</small>")
+    end
+    subgraph utils_facets_previewcanvas_components_PreviewCan_64222513["components/PreviewCanvas/PreviewCanvas.tsx"]
+        src_components_previewcanvas_previewcanvas_9a14a5fb("PreviewCanvas.tsx")
+        src_components_previewcanvas_previewcanvas_previ_a6d9e2f8("PreviewCanvas<br/><small>components/PreviewCanvas/PreviewCanvas.tsx</small>")
+    end
+    subgraph utils_facets_previewcanvas_src_hooks_useLandmark_ac818760["src/hooks/useLandmarkerStatus.ts"]
+        src_hooks_uselandmarkerstatus_5f3dd995("useLandmarkerStatus.ts")
+        src_hooks_uselandmarkerstatus_uselandmarkerstatu_cbc282bb("useLandmarkerStatus()<br/><small>src/hooks/useLandmarkerStatus.ts</small>")
+    end
+    subgraph utils_facets_previewcanvas_src_utils_image_ts_2265e369["src/utils/image.ts"]
+        src_utils_image_loadimagefromurl_688c315f("loadImageFromUrl()<br/><small>src/utils/image.ts</small>")
+        src_utils_image_loadimagefromfile_f3363ddf("loadImageFromFile()<br/><small>src/utils/image.ts</small>")
+    end
+    src_hooks_uselandmarkerstatus_uselandmarkerstatu_cbc282bb -->|calls| src_utils_face_subscribelandmarkerstatus_e8347412
+    src_utils_face_detectfacedata_768689cc -->|calls| src_utils_face_getlandmarker_3970af8d
+    src_utils_face_detectfacedata_768689cc -->|calls| src_utils_face_dist_52083766
+    src_utils_face_detectfacedata_768689cc -->|calls| src_utils_face_clamp_23dcf917
+    src_utils_face_getlandmarker_3970af8d -->|calls| src_utils_face_setstatus_161961da
+    src_utils_face_warmuplandmarker_1153ecb3 -->|calls| src_utils_face_getlandmarker_3970af8d
+    src_utils_render_rendertryon_aa0ea572 -->|calls| src_utils_image_loadimagefromurl_688c315f
+    src_utils_render_rendertryon_aa0ea572 -->|calls| src_utils_face_degtorad_66683908
+    src_utils_render_rendertryon_aa0ea572 -->|calls| src_utils_render_drawcircle_633b50de
+    src_components_previewcanvas_previewcanvas_previ_a6d9e2f8 -->|calls| src_utils_image_loadimagefromfile_f3363ddf
+    src_components_previewcanvas_previewcanvas_previ_a6d9e2f8 -->|calls| src_utils_face_detectfacedata_768689cc
+    src_components_previewcanvas_previewcanvas_previ_a6d9e2f8 -->|calls| src_utils_render_rendertryon_aa0ea572
+    src_components_previewcanvas_previewcanvas_previ_a6d9e2f8 -->|calls| src_hooks_uselandmarkerstatus_uselandmarkerstatu_cbc282bb
+    src_components_previewcanvas_previewcanvas_previ_a6d9e2f8 -->|calls| src_utils_face_setstatus_161961da
+    src_components_previewcanvas_previewcanvas_9a14a5fb -->|imports| src_utils_image_loadimagefromfile_f3363ddf
+    src_components_previewcanvas_previewcanvas_9a14a5fb -->|imports| src_utils_face_detectfacedata_768689cc
+    src_components_previewcanvas_previewcanvas_9a14a5fb -->|imports| src_utils_render_rendertryon_aa0ea572
+    src_components_previewcanvas_previewcanvas_9a14a5fb -->|imports| src_hooks_uselandmarkerstatus_uselandmarkerstatu_cbc282bb
+    src_components_previewcanvas_previewcanvas_9a14a5fb -->|imports| src_utils_face_91d7704a
+    src_components_previewcanvas_previewcanvas_9a14a5fb -->|imports| src_utils_render_0928076a
+    src_components_previewcanvas_previewcanvas_9a14a5fb -->|imports| src_hooks_uselandmarkerstatus_5f3dd995
+    src_hooks_uselandmarkerstatus_5f3dd995 -->|imports| src_utils_face_subscribelandmarkerstatus_e8347412
+    src_hooks_uselandmarkerstatus_5f3dd995 -->|imports| src_utils_face_91d7704a
+    src_utils_render_0928076a -->|imports| src_utils_image_loadimagefromurl_688c315f
+    %% Omitted for readability: 23 nodes, 2 edges
+    class src_utils_face_91d7704a module;
+    class src_utils_face_detectfacedata_768689cc function;
+    class src_utils_face_subscribelandmarkerstatus_e8347412 function;
+    class src_utils_face_getlandmarker_3970af8d function;
+    class src_utils_face_dist_52083766 function;
+    class src_utils_face_clamp_23dcf917 function;
+    class src_utils_face_setstatus_161961da function;
+    class src_utils_face_warmuplandmarker_1153ecb3 function;
+    class src_utils_face_degtorad_66683908 function;
+    class src_utils_render_0928076a module;
+    class src_utils_render_rendertryon_aa0ea572 function;
+    class src_utils_render_drawcircle_633b50de function;
+    class src_components_previewcanvas_previewcanvas_9a14a5fb ui;
+    class src_components_previewcanvas_previewcanvas_previ_a6d9e2f8 ui;
+    class src_hooks_uselandmarkerstatus_5f3dd995 ui;
+    class src_hooks_uselandmarkerstatus_uselandmarkerstatu_cbc282bb ui;
+    class src_utils_image_loadimagefromurl_688c315f function;
+    class src_utils_image_loadimagefromfile_f3363ddf function;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>PreviewCanvasProps</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>PreviewCanvasProps node in components/PreviewCanvas/PreviewCanvas.tsx.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>StatusKind</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>StatusKind node in components/PreviewCanvas/PreviewCanvas.tsx.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Earring</code><br><small style="color:var(--muted)">src/types/index.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>EarringGallery.tsx</code><br><small style="color:var(--muted)">components/EarringGallery/EarringGallery.tsx</small><br><code>earrings.ts</code><br><small style="color:var(--muted)">src/data/earrings.ts</small><br><code>PreviewCanvas.tsx</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>Earring node in src/types/index.ts.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>EarringSide</code><br><small style="color:var(--muted)">src/types/index.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>face.ts</code><br><small style="color:var(--muted)">src/utils/face.ts</small><br><code>OptionsPanel.tsx</code><br><small style="color:var(--muted)">components/OptionsPanel/OptionsPanel.tsx</small><br>+2 more</td>
+  <td>No direct outbound edge</td>
+  <td>EarringSide node in src/types/index.ts.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>FaceAnchor</code><br><small style="color:var(--muted)">src/types/index.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>FaceAnchor node in src/types/index.ts.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>FaceData</code><br><small style="color:var(--muted)">src/types/index.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>face.ts</code><br><small style="color:var(--muted)">src/utils/face.ts</small><br><code>PreviewCanvas.tsx</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small><br>+1 more</td>
+  <td>No direct outbound edge</td>
+  <td>FaceData node in src/types/index.ts.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>FaceDebugPoints</code><br><small style="color:var(--muted)">src/types/index.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>FaceDebugPoints node in src/types/index.ts.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>FaceLandmark</code><br><small style="color:var(--muted)">src/types/index.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>face.ts</code><br><small style="color:var(--muted)">src/utils/face.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>FaceLandmark node in src/types/index.ts.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>LandmarkerStatus</code><br><small style="color:var(--muted)">src/utils/face.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td><code>useLandmarkerStatus.ts</code><br><small style="color:var(--muted)">src/hooks/useLandmarkerStatus.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>LandmarkerStatus node in src/utils/face.ts.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>StatusListener</code><br><small style="color:var(--muted)">src/utils/face.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>StatusListener node in src/utils/face.ts.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>LoadedImage</code><br><small style="color:var(--muted)">src/utils/image.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>LoadedImage node in src/utils/image.ts.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>RenderTryOnOptions</code><br><small style="color:var(--muted)">src/utils/render.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>RenderTryOnOptions node in src/utils/render.ts.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>EmptyState()</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>PreviewCanvas</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>EmptyState() node in components/PreviewCanvas/PreviewCanvas.tsx.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>GenerateIcon()</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>PreviewCanvas</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>GenerateIcon() node in components/PreviewCanvas/PreviewCanvas.tsx.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>useLandmarkerStatus()</code><br><small style="color:var(--muted)">src/hooks/useLandmarkerStatus.ts</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>PreviewCanvas</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small><br><code>PreviewCanvas.tsx</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small></td>
+  <td><code>subscribeLandmarkerStatus()</code><br><small style="color:var(--muted)">src/utils/face.ts</small></td>
+  <td>useLandmarkerStatus() node in src/hooks/useLandmarkerStatus.ts.</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>clamp()</code><br><small style="color:var(--muted)">src/utils/face.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>detectFaceData()</code><br><small style="color:var(--muted)">src/utils/face.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>clamp() node in src/utils/face.ts.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>degToRad()</code><br><small style="color:var(--muted)">src/utils/face.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>render.ts</code><br><small style="color:var(--muted)">src/utils/render.ts</small><br><code>renderTryOn()</code><br><small style="color:var(--muted)">src/utils/render.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>degToRad() node in src/utils/face.ts.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>detectFaceData()</code><br><small style="color:var(--muted)">src/utils/face.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>PreviewCanvas</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small><br><code>PreviewCanvas.tsx</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small></td>
+  <td><code>clamp()</code><br><small style="color:var(--muted)">src/utils/face.ts</small><br><code>dist()</code><br><small style="color:var(--muted)">src/utils/face.ts</small><br><code>getLandmarker()</code><br><small style="color:var(--muted)">src/utils/face.ts</small></td>
+  <td>detectFaceData() node in src/utils/face.ts.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>dist()</code><br><small style="color:var(--muted)">src/utils/face.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>detectFaceData()</code><br><small style="color:var(--muted)">src/utils/face.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>dist() node in src/utils/face.ts.</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>getLandmarker()</code><br><small style="color:var(--muted)">src/utils/face.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>detectFaceData()</code><br><small style="color:var(--muted)">src/utils/face.ts</small><br><code>warmupLandmarker()</code><br><small style="color:var(--muted)">src/utils/face.ts</small></td>
+  <td><code>setStatus()</code><br><small style="color:var(--muted)">src/utils/face.ts</small></td>
+  <td>getLandmarker() node in src/utils/face.ts.</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>setStatus()</code><br><small style="color:var(--muted)">src/utils/face.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>getLandmarker()</code><br><small style="color:var(--muted)">src/utils/face.ts</small><br><code>PreviewCanvas</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>setStatus() node in src/utils/face.ts.</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>subscribeLandmarkerStatus()</code><br><small style="color:var(--muted)">src/utils/face.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>useLandmarkerStatus()</code><br><small style="color:var(--muted)">src/hooks/useLandmarkerStatus.ts</small><br><code>useLandmarkerStatus.ts</code><br><small style="color:var(--muted)">src/hooks/useLandmarkerStatus.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>subscribeLandmarkerStatus() node in src/utils/face.ts.</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>warmupLandmarker()</code><br><small style="color:var(--muted)">src/utils/face.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td><code>getLandmarker()</code><br><small style="color:var(--muted)">src/utils/face.ts</small></td>
+  <td>warmupLandmarker() node in src/utils/face.ts.</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>loadImageFromFile()</code><br><small style="color:var(--muted)">src/utils/image.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>PreviewCanvas</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small><br><code>PreviewCanvas.tsx</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>loadImageFromFile() node in src/utils/image.ts.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>loadImageFromUrl()</code><br><small style="color:var(--muted)">src/utils/image.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>render.ts</code><br><small style="color:var(--muted)">src/utils/render.ts</small><br><code>renderTryOn()</code><br><small style="color:var(--muted)">src/utils/render.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>loadImageFromUrl() node in src/utils/image.ts.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>revokeObjectUrl()</code><br><small style="color:var(--muted)">src/utils/image.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>PreviewCanvas</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small><br><code>PreviewCanvas.tsx</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>revokeObjectUrl() node in src/utils/image.ts.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>drawCircle()</code><br><small style="color:var(--muted)">src/utils/render.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>renderTryOn()</code><br><small style="color:var(--muted)">src/utils/render.ts</small></td>
+  <td>No direct outbound edge</td>
+  <td>drawCircle() node in src/utils/render.ts.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>renderTryOn()</code><br><small style="color:var(--muted)">src/utils/render.ts</small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>PreviewCanvas</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small><br><code>PreviewCanvas.tsx</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small></td>
+  <td><code>degToRad()</code><br><small style="color:var(--muted)">src/utils/face.ts</small><br><code>drawCircle()</code><br><small style="color:var(--muted)">src/utils/render.ts</small><br><code>loadImageFromUrl()</code><br><small style="color:var(--muted)">src/utils/image.ts</small></td>
+  <td>renderTryOn() node in src/utils/render.ts.</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>PreviewCanvas.tsx</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td><code>CANVAS_MAX_WIDTH</code><br><small style="color:var(--muted)">src/config/mediapipe.ts</small><br><code>detectFaceData()</code><br><small style="color:var(--muted)">src/utils/face.ts</small><br><code>Earring</code><br><small style="color:var(--muted)">src/types/index.ts</small><br>+14 more</td>
+  <td>Module file in components/PreviewCanvas/PreviewCanvas.tsx.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>PreviewCanvas</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App()</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td><code>detectFaceData()</code><br><small style="color:var(--muted)">src/utils/face.ts</small><br><code>EmptyState()</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small><br><code>GenerateIcon()</code><br><small style="color:var(--muted)">components/PreviewCanvas/PreviewCanvas.tsx</small><br>+5 more</td>
+  <td>PreviewCanvas node in components/PreviewCanvas/PreviewCanvas.tsx.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/utils/face.ts</code></td><td>12 nodes</td></tr>
+<tr><td><code>src/types/index.ts</code></td><td>7 nodes</td></tr>
+<tr><td><code>components/PreviewCanvas/PreviewCanvas.tsx</code></td><td>6 nodes</td></tr>
+<tr><td><code>src/utils/image.ts</code></td><td>5 nodes</td></tr>
+<tr><td><code>src/utils/render.ts</code></td><td>4 nodes</td></tr>
+<tr><td><code>src/config/mediapipe.ts</code></td><td>3 nodes</td></tr>
+<tr><td><code>src/hooks/useLandmarkerStatus.ts</code></td><td>2 nodes</td></tr>
+<tr><td><code>README.md</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x32, imports x21, calls x17, imports x14. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 5. Strategymd Fase Modelo ====== -->
+<h2 id="strategymd-fase-modelo">5. Strategymd Fase Modelo</h2>
+<p>Strategymd Fase Modelo groups implementation around strategymd, fase, modelo, estratégia, mostly in STRATEGY.md. This section covers 34 nodes and 33 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Strategymd Fase Modelo (34 nodes, 33 edges)
+    strategy_4_estrat_gia_comercial_1f6a8969("4. Estratégia Comercial<br/><small>STRATEGY.md</small>")
+    strategy_estrat_gia_de_produto_virtual_earring_t_b0546739("Estratégia de Produto — Virtual Earring...<br/><small>STRATEGY.md</small>")
+    strategy_5_sugest_es_de_melhorias_do_produto_8ac434b5("5. Sugestões de Melhorias do Produto<br/><small>STRATEGY.md</small>")
+    strategy_6_estrat_gia_para_apresenta_o_em_1_sema_21549140("6. Estratégia para Apresentação em 1 Se...<br/><small>STRATEGY.md</small>")
+    strategy_7_roadmap_t_cnico_7427956e("7. Roadmap Técnico<br/><small>STRATEGY.md</small>")
+    strategy_8_conclus_o_estrat_gica_dff080f7("8. Conclusão Estratégica<br/><small>STRATEGY.md</small>")
+    strategy_1_estado_actual_do_projecto_6f7f627e("1. Estado Actual do Projecto<br/><small>STRATEGY.md</small>")
+    strategy_como_causar_boa_impress_o_5f97f650("Como causar boa impressão<br/><small>STRATEGY.md</small>")
+    strategy_dashboard_para_fornecedores_72c4a180("Dashboard para fornecedores<br/><small>STRATEGY.md</small>")
+    strategy_diferenciais_competitivos_42eef3e3("Diferenciais competitivos<br/><small>STRATEGY.md</small>")
+    strategy_fase_1_mvp_apresent_vel_semana_1_60fc4e8a("Fase 1 — MVP Apresentável (semana 1)<br/><small>STRATEGY.md</small>")
+    strategy_fase_2_beta_privado_m_s_1_3_1893e960("Fase 2 — Beta Privado (mês 1–3)<br/><small>STRATEGY.md</small>")
+    strategy_fase_3_produ_o_m_s_3_6_9612839b("Fase 3 — Produção (mês 3–6)<br/><small>STRATEGY.md</small>")
+    strategy_fase_4_escala_m_s_6_12_2dd6dd75("Fase 4 — Escala (mês 6–12)<br/><small>STRATEGY.md</small>")
+    strategy_ia_de_recomenda_o_por_formato_de_rosto_7f809d48("IA de recomendação por formato de rosto<br/><small>STRATEGY.md</small>")
+    strategy_impacto_alto_curto_prazo_bbb4c7f5("Impacto alto — curto prazo<br/><small>STRATEGY.md</small>")
+    strategy_limita_es_t_cnicas_actuais_33a27739("Limitações técnicas actuais<br/><small>STRATEGY.md</small>")
+    strategy_melhorias_visuais_r_pidas_menos_de_4h_c_bab20218("Melhorias visuais rápidas (menos de 4h...<br/><small>STRATEGY.md</small>")
+    strategy_1_estado_actual_do_projecto_6f7f627e -->|contains| strategy_limita_es_t_cnicas_actuais_33a27739
+    strategy_5_sugest_es_de_melhorias_do_produto_8ac434b5 -->|contains| strategy_impacto_alto_curto_prazo_bbb4c7f5
+    strategy_5_sugest_es_de_melhorias_do_produto_8ac434b5 -->|contains| strategy_ia_de_recomenda_o_por_formato_de_rosto_7f809d48
+    strategy_5_sugest_es_de_melhorias_do_produto_8ac434b5 -->|contains| strategy_dashboard_para_fornecedores_72c4a180
+    strategy_6_estrat_gia_para_apresenta_o_em_1_sema_21549140 -->|contains| strategy_melhorias_visuais_r_pidas_menos_de_4h_c_bab20218
+    strategy_6_estrat_gia_para_apresenta_o_em_1_sema_21549140 -->|contains| strategy_como_causar_boa_impress_o_5f97f650
+    strategy_7_roadmap_t_cnico_7427956e -->|contains| strategy_fase_1_mvp_apresent_vel_semana_1_60fc4e8a
+    strategy_7_roadmap_t_cnico_7427956e -->|contains| strategy_fase_2_beta_privado_m_s_1_3_1893e960
+    strategy_7_roadmap_t_cnico_7427956e -->|contains| strategy_fase_3_produ_o_m_s_3_6_9612839b
+    strategy_7_roadmap_t_cnico_7427956e -->|contains| strategy_fase_4_escala_m_s_6_12_2dd6dd75
+    strategy_8_conclus_o_estrat_gica_dff080f7 -->|contains| strategy_diferenciais_competitivos_42eef3e3
+    strategy_estrat_gia_de_produto_virtual_earring_t_b0546739 -->|contains| strategy_4_estrat_gia_comercial_1f6a8969
+    strategy_estrat_gia_de_produto_virtual_earring_t_b0546739 -->|contains| strategy_5_sugest_es_de_melhorias_do_produto_8ac434b5
+    strategy_estrat_gia_de_produto_virtual_earring_t_b0546739 -->|contains| strategy_6_estrat_gia_para_apresenta_o_em_1_sema_21549140
+    strategy_estrat_gia_de_produto_virtual_earring_t_b0546739 -->|contains| strategy_7_roadmap_t_cnico_7427956e
+    strategy_estrat_gia_de_produto_virtual_earring_t_b0546739 -->|contains| strategy_8_conclus_o_estrat_gica_dff080f7
+    strategy_estrat_gia_de_produto_virtual_earring_t_b0546739 -->|contains| strategy_1_estado_actual_do_projecto_6f7f627e
+    %% Omitted for readability: 16 nodes, 0 edges
+    class strategy_4_estrat_gia_comercial_1f6a8969 concept;
+    class strategy_estrat_gia_de_produto_virtual_earring_t_b0546739 concept;
+    class strategy_5_sugest_es_de_melhorias_do_produto_8ac434b5 concept;
+    class strategy_6_estrat_gia_para_apresenta_o_em_1_sema_21549140 concept;
+    class strategy_7_roadmap_t_cnico_7427956e concept;
+    class strategy_8_conclus_o_estrat_gica_dff080f7 concept;
+    class strategy_1_estado_actual_do_projecto_6f7f627e concept;
+    class strategy_como_causar_boa_impress_o_5f97f650 concept;
+    class strategy_dashboard_para_fornecedores_72c4a180 concept;
+    class strategy_diferenciais_competitivos_42eef3e3 concept;
+    class strategy_fase_1_mvp_apresent_vel_semana_1_60fc4e8a concept;
+    class strategy_fase_2_beta_privado_m_s_1_3_1893e960 concept;
+    class strategy_fase_3_produ_o_m_s_3_6_9612839b concept;
+    class strategy_fase_4_escala_m_s_6_12_2dd6dd75 concept;
+    class strategy_ia_de_recomenda_o_por_formato_de_rosto_7f809d48 concept;
+    class strategy_impacto_alto_curto_prazo_bbb4c7f5 concept;
+    class strategy_limita_es_t_cnicas_actuais_33a27739 concept;
+    class strategy_melhorias_visuais_r_pidas_menos_de_4h_c_bab20218 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>STRATEGY.md</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing STRATEGY.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>1. Estado Actual do Projecto</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 1. Estado Actual do Projecto.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>4. Estratégia Comercial</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 4. Estratégia Comercial.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>5. Sugestões de Melhorias do Produto</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 5. Sugestões de Melhorias do Produto.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>6. Estratégia para Apresentação em 1 Semana</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 6. Estratégia para Apresentação em 1 Semana.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>7. Roadmap Técnico</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 7. Roadmap Técnico.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>8. Conclusão Estratégica</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 8. Conclusão Estratégica.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>Como causar boa impressão</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Como causar boa impressão.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>Dashboard para fornecedores</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Dashboard para fornecedores.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>Diferenciais competitivos</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Diferenciais competitivos.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>Estratégia de Produto — Virtual Earring Try-On</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Estratégia de Produto — Virtual Earring Try-On.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>Fase 1 — MVP Apresentável (semana 1)</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Fase 1 — MVP Apresentável (semana 1).</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>Fase 2 — Beta Privado (mês 1–3)</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Fase 2 — Beta Privado (mês 1–3).</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>Fase 3 — Produção (mês 3–6)</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Fase 3 — Produção (mês 3–6).</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>Fase 4 — Escala (mês 6–12)</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Fase 4 — Escala (mês 6–12).</td>
+</tr>
+<tr>
+  <td>16</td>
+  <td><code>IA de recomendação por formato de rosto</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing IA de recomendação por formato de rosto.</td>
+</tr>
+<tr>
+  <td>17</td>
+  <td><code>Impacto alto — curto prazo</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Impacto alto — curto prazo.</td>
+</tr>
+<tr>
+  <td>18</td>
+  <td><code>Limitações técnicas actuais</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Limitações técnicas actuais.</td>
+</tr>
+<tr>
+  <td>19</td>
+  <td><code>Melhorias visuais rápidas (menos de 4h cada)</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Melhorias visuais rápidas (menos de 4h cada).</td>
+</tr>
+<tr>
+  <td>20</td>
+  <td><code>Modelo 1 — Redireccionar para lojas (afiliados)</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Modelo 1 — Redireccionar para lojas (afiliados).</td>
+</tr>
+<tr>
+  <td>21</td>
+  <td><code>Modelo 2 — Catálogo patrocinado (B2B SaaS)</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Modelo 2 — Catálogo patrocinado (B2B SaaS).</td>
+</tr>
+<tr>
+  <td>22</td>
+  <td><code>Modelo 3 — API white-label (B2B2C)</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Modelo 3 — API white-label (B2B2C).</td>
+</tr>
+<tr>
+  <td>23</td>
+  <td><code>Modelo 4 — Comissão por venda (marketplace)</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Modelo 4 — Comissão por venda (marketplace).</td>
+</tr>
+<tr>
+  <td>24</td>
+  <td><code>Modo câmara em tempo real</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Modo câmara em tempo real.</td>
+</tr>
+<tr>
+  <td>25</td>
+  <td><code>O mercado</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing O mercado.</td>
+</tr>
+<tr>
+  <td>26</td>
+  <td><code>O potencial</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing O potencial.</td>
+</tr>
+<tr>
+  <td>27</td>
+  <td><code>O que existe hoje</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing O que existe hoje.</td>
+</tr>
+<tr>
+  <td>28</td>
+  <td><code>O que pode ser mockado (sem implementar)</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing O que pode ser mockado (sem implementar).</td>
+</tr>
+<tr>
+  <td>29</td>
+  <td><code>Pontos fortes</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Pontos fortes.</td>
+</tr>
+<tr>
+  <td>30</td>
+  <td><code>Prioridades absolutas (não negociáveis)</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Prioridades absolutas (não negociáveis).</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>STRATEGY.md</code></td><td>34 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x33. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 6. Readmemd Adicionar Brincos ====== -->
+<h2 id="readmemd-adicionar-brincos">6. Readmemd Adicionar Brincos</h2>
+<p>Readmemd Adicionar Brincos groups implementation around readmemd, adicionar, brincos, catálogo, mostly in README.md. This section covers 15 nodes and 14 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Readmemd Adicionar Brincos (15 nodes, 14 edges)
+    readme_virtual_earring_try_on_59981544("Virtual Earring Try-On<br/><small>README.md</small>")
+    readme_deploy_c3c7f677("Deploy<br/><small>README.md</small>")
+    readme_f78a71af("README.md")
+    readme_vercel_netlify_recomendado_658d1b3b("Vercel / Netlify (recomendado)<br/><small>README.md</small>")
+    readme_docker_936d7f30("Docker<br/><small>README.md</small>")
+    readme_adicionar_brincos_ao_cat_logo_08fa773b("Adicionar brincos ao catálogo<br/><small>README.md</small>")
+    readme_boas_pr_ticas_do_projecto_0d57b896("Boas práticas do projecto<br/><small>README.md</small>")
+    readme_comandos_dispon_veis_f6eaba09("Comandos disponíveis<br/><small>README.md</small>")
+    readme_configura_o_do_ambiente_54ecdebe("Configuração do ambiente<br/><small>README.md</small>")
+    readme_contribuir_ebe4cee5("Contribuir<br/><small>README.md</small>")
+    readme_estrutura_de_pastas_9711ac15("Estrutura de pastas<br/><small>README.md</small>")
+    readme_instala_o_a93bc238("Instalação<br/><small>README.md</small>")
+    readme_pr_requisitos_4c47874c("Pré-requisitos<br/><small>README.md</small>")
+    readme_stack_77a60f74("Stack<br/><small>README.md</small>")
+    readme_testes_4abc1ef7("Testes<br/><small>README.md</small>")
+    readme_f78a71af -->|contains| readme_virtual_earring_try_on_59981544
+    readme_deploy_c3c7f677 -->|contains| readme_vercel_netlify_recomendado_658d1b3b
+    readme_deploy_c3c7f677 -->|contains| readme_docker_936d7f30
+    readme_virtual_earring_try_on_59981544 -->|contains| readme_adicionar_brincos_ao_cat_logo_08fa773b
+    readme_virtual_earring_try_on_59981544 -->|contains| readme_boas_pr_ticas_do_projecto_0d57b896
+    readme_virtual_earring_try_on_59981544 -->|contains| readme_testes_4abc1ef7
+    readme_virtual_earring_try_on_59981544 -->|contains| readme_deploy_c3c7f677
+    readme_virtual_earring_try_on_59981544 -->|contains| readme_pr_requisitos_4c47874c
+    readme_virtual_earring_try_on_59981544 -->|contains| readme_contribuir_ebe4cee5
+    readme_virtual_earring_try_on_59981544 -->|contains| readme_instala_o_a93bc238
+    readme_virtual_earring_try_on_59981544 -->|contains| readme_configura_o_do_ambiente_54ecdebe
+    readme_virtual_earring_try_on_59981544 -->|contains| readme_comandos_dispon_veis_f6eaba09
+    readme_virtual_earring_try_on_59981544 -->|contains| readme_estrutura_de_pastas_9711ac15
+    readme_virtual_earring_try_on_59981544 -->|contains| readme_stack_77a60f74
+    class readme_virtual_earring_try_on_59981544 concept;
+    class readme_deploy_c3c7f677 concept;
+    class readme_f78a71af concept;
+    class readme_vercel_netlify_recomendado_658d1b3b concept;
+    class readme_docker_936d7f30 concept;
+    class readme_adicionar_brincos_ao_cat_logo_08fa773b concept;
+    class readme_boas_pr_ticas_do_projecto_0d57b896 concept;
+    class readme_comandos_dispon_veis_f6eaba09 concept;
+    class readme_configura_o_do_ambiente_54ecdebe concept;
+    class readme_contribuir_ebe4cee5 concept;
+    class readme_estrutura_de_pastas_9711ac15 concept;
+    class readme_instala_o_a93bc238 concept;
+    class readme_pr_requisitos_4c47874c concept;
+    class readme_stack_77a60f74 concept;
+    class readme_testes_4abc1ef7 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>README.md</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing README.md.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Adicionar brincos ao catálogo</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Adicionar brincos ao catálogo.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Boas práticas do projecto</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Boas práticas do projecto.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Comandos disponíveis</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Comandos disponíveis.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Configuração do ambiente</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Configuração do ambiente.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Contribuir</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Contribuir.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>Deploy</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Deploy.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>Docker</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Docker.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>Estrutura de pastas</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Estrutura de pastas.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>Instalação</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Instalação.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>Pré-requisitos</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Pré-requisitos.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>Stack</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Stack.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>Testes</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Testes.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>Vercel / Netlify (recomendado)</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Vercel / Netlify (recomendado).</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>Virtual Earring Try-On</code><br><small style="color:var(--muted)">README.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Virtual Earring Try-On.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>README.md</code></td><td>15 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x14. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 7. Strategymd Meses Prazo ====== -->
+<h2 id="strategymd-meses-prazo">7. Strategymd Meses Prazo</h2>
+<p>Strategymd Meses Prazo groups implementation around strategymd, meses, prazo, produto, mostly in STRATEGY.md. This section covers 15 nodes and 14 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Strategymd Meses Prazo (15 nodes, 14 edges)
+    strategy_2_checklist_de_escalabilidade_af38d5a4("2. Checklist de Escalabilidade<br/><small>STRATEGY.md</small>")
+    strategy_curto_prazo_1_a_3_meses_f0054ff3("Curto prazo — 1 a 3 meses<br/><small>STRATEGY.md</small>")
+    strategy_imediato_1_semana_antes_da_apresenta_o_738d7359("Imediato — 1 semana (antes da apresenta...<br/><small>STRATEGY.md</small>")
+    strategy_m_dio_prazo_3_a_6_meses_e9e2c7df("Médio prazo — 3 a 6 meses<br/><small>STRATEGY.md</small>")
+    strategy_produ_o_real_6_a_12_meses_31c58c3d("Produção real — 6 a 12 meses<br/><small>STRATEGY.md</small>")
+    strategy_backend_e_cat_logo_6dd8b012("Backend e catálogo<br/><small>STRATEGY.md</small>")
+    strategy_analytics_m_nimo_9a67dd2b("Analytics mínimo<br/><small>STRATEGY.md</small>")
+    strategy_arquitectura_3f44c932("Arquitectura<br/><small>STRATEGY.md</small>")
+    strategy_deploy_e_qualidade_7316a31d("Deploy e qualidade<br/><small>STRATEGY.md</small>")
+    strategy_performance_852e57b9("Performance<br/><small>STRATEGY.md</small>")
+    strategy_produto_6845bf22("Produto<br/><small>STRATEGY.md</small>")
+    strategy_produto_e_ux_18177f2f("Produto e UX<br/><small>STRATEGY.md</small>")
+    strategy_renderiza_o_avan_ada_07fc1f2b("Renderização avançada<br/><small>STRATEGY.md</small>")
+    strategy_seguran_a_e8d55b12("Segurança<br/><small>STRATEGY.md</small>")
+    strategy_sistema_de_parceiros_458a2cd2("Sistema de parceiros<br/><small>STRATEGY.md</small>")
+    strategy_2_checklist_de_escalabilidade_af38d5a4 -->|contains| strategy_m_dio_prazo_3_a_6_meses_e9e2c7df
+    strategy_2_checklist_de_escalabilidade_af38d5a4 -->|contains| strategy_produ_o_real_6_a_12_meses_31c58c3d
+    strategy_2_checklist_de_escalabilidade_af38d5a4 -->|contains| strategy_imediato_1_semana_antes_da_apresenta_o_738d7359
+    strategy_2_checklist_de_escalabilidade_af38d5a4 -->|contains| strategy_curto_prazo_1_a_3_meses_f0054ff3
+    strategy_curto_prazo_1_a_3_meses_f0054ff3 -->|contains| strategy_backend_e_cat_logo_6dd8b012
+    strategy_curto_prazo_1_a_3_meses_f0054ff3 -->|contains| strategy_arquitectura_3f44c932
+    strategy_curto_prazo_1_a_3_meses_f0054ff3 -->|contains| strategy_performance_852e57b9
+    strategy_curto_prazo_1_a_3_meses_f0054ff3 -->|contains| strategy_seguran_a_e8d55b12
+    strategy_imediato_1_semana_antes_da_apresenta_o_738d7359 -->|contains| strategy_produto_e_ux_18177f2f
+    strategy_imediato_1_semana_antes_da_apresenta_o_738d7359 -->|contains| strategy_deploy_e_qualidade_7316a31d
+    strategy_imediato_1_semana_antes_da_apresenta_o_738d7359 -->|contains| strategy_analytics_m_nimo_9a67dd2b
+    strategy_m_dio_prazo_3_a_6_meses_e9e2c7df -->|contains| strategy_renderiza_o_avan_ada_07fc1f2b
+    strategy_m_dio_prazo_3_a_6_meses_e9e2c7df -->|contains| strategy_sistema_de_parceiros_458a2cd2
+    strategy_m_dio_prazo_3_a_6_meses_e9e2c7df -->|contains| strategy_produto_6845bf22
+    class strategy_2_checklist_de_escalabilidade_af38d5a4 concept;
+    class strategy_curto_prazo_1_a_3_meses_f0054ff3 concept;
+    class strategy_imediato_1_semana_antes_da_apresenta_o_738d7359 concept;
+    class strategy_m_dio_prazo_3_a_6_meses_e9e2c7df concept;
+    class strategy_produ_o_real_6_a_12_meses_31c58c3d concept;
+    class strategy_backend_e_cat_logo_6dd8b012 concept;
+    class strategy_analytics_m_nimo_9a67dd2b concept;
+    class strategy_arquitectura_3f44c932 concept;
+    class strategy_deploy_e_qualidade_7316a31d concept;
+    class strategy_performance_852e57b9 concept;
+    class strategy_produto_6845bf22 concept;
+    class strategy_produto_e_ux_18177f2f concept;
+    class strategy_renderiza_o_avan_ada_07fc1f2b concept;
+    class strategy_seguran_a_e8d55b12 concept;
+    class strategy_sistema_de_parceiros_458a2cd2 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>2. Checklist de Escalabilidade</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 2. Checklist de Escalabilidade.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Analytics mínimo</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Analytics mínimo.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Arquitectura</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Arquitectura.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Backend e catálogo</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Backend e catálogo.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Curto prazo — 1 a 3 meses</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Curto prazo — 1 a 3 meses.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Deploy e qualidade</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Deploy e qualidade.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>Imediato — 1 semana (antes da apresentação)</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Imediato — 1 semana (antes da apresentação).</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>Médio prazo — 3 a 6 meses</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Médio prazo — 3 a 6 meses.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>Performance</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Performance.</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>Produto</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Produto.</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>Produto e UX</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Produto e UX.</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>Produção real — 6 a 12 meses</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Produção real — 6 a 12 meses.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>Renderização avançada</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Renderização avançada.</td>
+</tr>
+<tr>
+  <td>14</td>
+  <td><code>Segurança</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Segurança.</td>
+</tr>
+<tr>
+  <td>15</td>
+  <td><code>Sistema de parceiros</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Sistema de parceiros.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>STRATEGY.md</code></td><td>15 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x14. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 8. Strategymd Renderização Melhorias ====== -->
+<h2 id="strategymd-renderiza-o-melhorias">8. Strategymd Renderização Melhorias</h2>
+<p>Strategymd Renderização Melhorias groups implementation around strategymd, renderização, melhorias, anti, mostly in STRATEGY.md. This section covers 13 nodes and 12 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Strategymd Renderização Melhorias (13 nodes, 12 edges)
+    strategy_3_melhorias_de_renderiza_o_a520bd7f("3. Melhorias de Renderização<br/><small>STRATEGY.md</small>")
+    strategy_melhorias_imediatas_no_canvas_2d_sem_mu_8e245d5f("Melhorias imediatas no Canvas 2D (sem m...<br/><small>STRATEGY.md</small>")
+    strategy_migra_o_para_webgl_three_js_m_dio_prazo_889ff980("Migração para WebGL/Three.js (médio prazo)<br/><small>STRATEGY.md</small>")
+    strategy_estado_actual_da_renderiza_o_188cf458("Estado actual da renderização<br/><small>STRATEGY.md</small>")
+    strategy_carregamento_ass_ncrono_do_modelo_media_5ab9c495("Carregamento assíncrono do modelo Media...<br/><small>STRATEGY.md</small>")
+    strategy_anti_aliasing_59d2327f("Anti-aliasing<br/><small>STRATEGY.md</small>")
+    strategy_compress_o_e_formato_de_assets_05479c8a("Compressão e formato de assets<br/><small>STRATEGY.md</small>")
+    strategy_environment_maps_542d0aff("Environment Maps<br/><small>STRATEGY.md</small>")
+    strategy_ilumina_o_simulada_com_blend_modes_3dadbd83("Iluminação simulada com blend modes<br/><small>STRATEGY.md</small>")
+    strategy_impacto_em_fps_e_mobile_1168a168("Impacto em FPS e mobile<br/><small>STRATEGY.md</small>")
+    strategy_materiais_pbr_physically_based_renderin_3b84398e("Materiais PBR (Physically Based Rendering)<br/><small>STRATEGY.md</small>")
+    strategy_renderiza_o_progressiva_e731e9a0("Renderização progressiva<br/><small>STRATEGY.md</small>")
+    strategy_sombras_melhoradas_bf409895("Sombras melhoradas<br/><small>STRATEGY.md</small>")
+    strategy_3_melhorias_de_renderiza_o_a520bd7f -->|contains| strategy_estado_actual_da_renderiza_o_188cf458
+    strategy_3_melhorias_de_renderiza_o_a520bd7f -->|contains| strategy_melhorias_imediatas_no_canvas_2d_sem_mu_8e245d5f
+    strategy_3_melhorias_de_renderiza_o_a520bd7f -->|contains| strategy_migra_o_para_webgl_three_js_m_dio_prazo_889ff980
+    strategy_3_melhorias_de_renderiza_o_a520bd7f -->|contains| strategy_carregamento_ass_ncrono_do_modelo_media_5ab9c495
+    strategy_melhorias_imediatas_no_canvas_2d_sem_mu_8e245d5f -->|contains| strategy_anti_aliasing_59d2327f
+    strategy_melhorias_imediatas_no_canvas_2d_sem_mu_8e245d5f -->|contains| strategy_ilumina_o_simulada_com_blend_modes_3dadbd83
+    strategy_melhorias_imediatas_no_canvas_2d_sem_mu_8e245d5f -->|contains| strategy_sombras_melhoradas_bf409895
+    strategy_melhorias_imediatas_no_canvas_2d_sem_mu_8e245d5f -->|contains| strategy_compress_o_e_formato_de_assets_05479c8a
+    strategy_migra_o_para_webgl_three_js_m_dio_prazo_889ff980 -->|contains| strategy_materiais_pbr_physically_based_renderin_3b84398e
+    strategy_migra_o_para_webgl_three_js_m_dio_prazo_889ff980 -->|contains| strategy_environment_maps_542d0aff
+    strategy_migra_o_para_webgl_three_js_m_dio_prazo_889ff980 -->|contains| strategy_renderiza_o_progressiva_e731e9a0
+    strategy_migra_o_para_webgl_three_js_m_dio_prazo_889ff980 -->|contains| strategy_impacto_em_fps_e_mobile_1168a168
+    class strategy_3_melhorias_de_renderiza_o_a520bd7f concept;
+    class strategy_melhorias_imediatas_no_canvas_2d_sem_mu_8e245d5f concept;
+    class strategy_migra_o_para_webgl_three_js_m_dio_prazo_889ff980 concept;
+    class strategy_estado_actual_da_renderiza_o_188cf458 concept;
+    class strategy_carregamento_ass_ncrono_do_modelo_media_5ab9c495 concept;
+    class strategy_anti_aliasing_59d2327f concept;
+    class strategy_compress_o_e_formato_de_assets_05479c8a concept;
+    class strategy_environment_maps_542d0aff concept;
+    class strategy_ilumina_o_simulada_com_blend_modes_3dadbd83 concept;
+    class strategy_impacto_em_fps_e_mobile_1168a168 concept;
+    class strategy_materiais_pbr_physically_based_renderin_3b84398e concept;
+    class strategy_renderiza_o_progressiva_e731e9a0 concept;
+    class strategy_sombras_melhoradas_bf409895 concept;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>3. Melhorias de Renderização</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing 3. Melhorias de Renderização.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Anti-aliasing</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Anti-aliasing.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>Carregamento assíncrono do modelo MediaPipe</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Carregamento assíncrono do modelo MediaPipe.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>Compressão e formato de assets</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Compressão e formato de assets.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>Environment Maps</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Environment Maps.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>Estado actual da renderização</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Estado actual da renderização.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>Iluminação simulada com blend modes</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Iluminação simulada com blend modes.</td>
+</tr>
+<tr>
+  <td>8</td>
+  <td><code>Impacto em FPS e mobile</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Impacto em FPS e mobile.</td>
+</tr>
+<tr>
+  <td>9</td>
+  <td><code>Materiais PBR (Physically Based Rendering)</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Materiais PBR (Physically Based Rendering).</td>
+</tr>
+<tr>
+  <td>10</td>
+  <td><code>Melhorias imediatas no Canvas 2D (sem mudança de stack)</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Melhorias imediatas no Canvas 2D (sem mudança de stack).</td>
+</tr>
+<tr>
+  <td>11</td>
+  <td><code>Migração para WebGL/Three.js (médio prazo)</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Migração para WebGL/Three.js (médio prazo).</td>
+</tr>
+<tr>
+  <td>12</td>
+  <td><code>Renderização progressiva</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Renderização progressiva.</td>
+</tr>
+<tr>
+  <td>13</td>
+  <td><code>Sombras melhoradas</code><br><small style="color:var(--muted)">STRATEGY.md</small></td>
+  <td><span class="tag tag-func">Concept</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Documentation node describing Sombras melhoradas.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>STRATEGY.md</code></td><td>13 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x12. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 9. Errorboundary Errorboundarytsx Components ====== -->
+<h2 id="errorboundary-errorboundarytsx-components">9. Errorboundary Errorboundarytsx Components</h2>
+<p>Errorboundary Errorboundarytsx Components groups implementation around errorboundary, errorboundarytsx, components, props, mostly in components/ErrorBoundary/ErrorBoundary.tsx. This section covers 7 nodes and 6 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Errorboundary Errorboundarytsx Components (7 nodes, 6 edges)
+    src_components_errorboundary_errorboundary_error_a817286b("ErrorBoundary<br/><small>components/ErrorBoundary/ErrorBoundary.tsx</small>")
+    src_components_errorboundary_errorboundary_error_b99941ea("getDerivedStateFromError()<br/><small>components/ErrorBoundary/ErrorBoundary.tsx</small>")
+    src_components_errorboundary_errorboundary_error_28aeb15b("componentDidCatch()<br/><small>components/ErrorBoundary/ErrorBoundary.tsx</small>")
+    src_components_errorboundary_errorboundary_error_5ed4caf0("render()<br/><small>components/ErrorBoundary/ErrorBoundary.tsx</small>")
+    src_components_errorboundary_errorboundary_896a097a("ErrorBoundary.tsx")
+    src_components_errorboundary_errorboundary_props_f467f044("Props<br/><small>components/ErrorBoundary/ErrorBoundary.tsx</small>")
+    src_components_errorboundary_errorboundary_state_ab98d846("State<br/><small>components/ErrorBoundary/ErrorBoundary.tsx</small>")
+    src_components_errorboundary_errorboundary_error_a817286b -->|method| src_components_errorboundary_errorboundary_error_b99941ea
+    src_components_errorboundary_errorboundary_error_a817286b -->|method| src_components_errorboundary_errorboundary_error_28aeb15b
+    src_components_errorboundary_errorboundary_error_a817286b -->|method| src_components_errorboundary_errorboundary_error_5ed4caf0
+    class src_components_errorboundary_errorboundary_error_a817286b ui;
+    class src_components_errorboundary_errorboundary_error_b99941ea ui;
+    class src_components_errorboundary_errorboundary_error_28aeb15b ui;
+    class src_components_errorboundary_errorboundary_error_5ed4caf0 ui;
+    class src_components_errorboundary_errorboundary_896a097a ui;
+    class src_components_errorboundary_errorboundary_props_f467f044 ui;
+    class src_components_errorboundary_errorboundary_state_ab98d846 ui;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>ErrorBoundary</code><br><small style="color:var(--muted)">components/ErrorBoundary/ErrorBoundary.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App()</code><br><small style="color:var(--muted)">src/App.tsx</small><br><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td><code>componentDidCatch()</code><br><small style="color:var(--muted)">components/ErrorBoundary/ErrorBoundary.tsx</small><br><code>getDerivedStateFromError()</code><br><small style="color:var(--muted)">components/ErrorBoundary/ErrorBoundary.tsx</small><br><code>render()</code><br><small style="color:var(--muted)">components/ErrorBoundary/ErrorBoundary.tsx</small></td>
+  <td>ErrorBoundary node in components/ErrorBoundary/ErrorBoundary.tsx.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>Props</code><br><small style="color:var(--muted)">components/ErrorBoundary/ErrorBoundary.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Props node in components/ErrorBoundary/ErrorBoundary.tsx.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>State</code><br><small style="color:var(--muted)">components/ErrorBoundary/ErrorBoundary.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>State node in components/ErrorBoundary/ErrorBoundary.tsx.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>.componentDidCatch()</code><br><small style="color:var(--muted)">components/ErrorBoundary/ErrorBoundary.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>ErrorBoundary</code><br><small style="color:var(--muted)">components/ErrorBoundary/ErrorBoundary.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>.componentDidCatch() node in components/ErrorBoundary/ErrorBoundary.tsx.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>.getDerivedStateFromError()</code><br><small style="color:var(--muted)">components/ErrorBoundary/ErrorBoundary.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>ErrorBoundary</code><br><small style="color:var(--muted)">components/ErrorBoundary/ErrorBoundary.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>.getDerivedStateFromError() node in components/ErrorBoundary/ErrorBoundary.tsx.</td>
+</tr>
+<tr>
+  <td>6</td>
+  <td><code>.render()</code><br><small style="color:var(--muted)">components/ErrorBoundary/ErrorBoundary.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>ErrorBoundary</code><br><small style="color:var(--muted)">components/ErrorBoundary/ErrorBoundary.tsx</small></td>
+  <td>No direct outbound edge</td>
+  <td>.render() node in components/ErrorBoundary/ErrorBoundary.tsx.</td>
+</tr>
+<tr>
+  <td>7</td>
+  <td><code>ErrorBoundary.tsx</code><br><small style="color:var(--muted)">components/ErrorBoundary/ErrorBoundary.tsx</small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>App.tsx</code><br><small style="color:var(--muted)">src/App.tsx</small></td>
+  <td><code>react</code><br><small style="color:var(--muted)">package.json</small></td>
+  <td>Module file in components/ErrorBoundary/ErrorBoundary.tsx.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>components/ErrorBoundary/ErrorBoundary.tsx</code></td><td>7 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: method x3, contains x3. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 10. Ref Eslint Eslintconfigjs ====== -->
+<h2 id="ref-eslint-eslintconfigjs">10. Ref Eslint Eslintconfigjs</h2>
+<p>Ref Eslint Eslintconfigjs groups implementation around ref, eslint, eslintconfigjs, plugin, mostly in eslint.config.js. This section covers 5 nodes and 4 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Ref Eslint Eslintconfigjs (5 nodes, 4 edges)
+    subgraph ref_eslint_eslintconfigjs_External_generated_f9ccf882["External / generated"]
+        ref_eslint_js_d5412ee4("ref_eslint_js")
+        ref_globals_18122627("ref_globals")
+        ref_eslint_plugin_react_hooks_36b93c5e("plugin react hooks")
+        ref_eslint_plugin_react_refresh_e93dbdba("plugin react refresh")
+    end
+    eslint_config_80901414("eslint.config.js")
+    eslint_config_80901414 -->|imports| ref_eslint_js_d5412ee4
+    eslint_config_80901414 -->|imports| ref_globals_18122627
+    eslint_config_80901414 -->|imports| ref_eslint_plugin_react_hooks_36b93c5e
+    eslint_config_80901414 -->|imports| ref_eslint_plugin_react_refresh_e93dbdba
+    class ref_eslint_js_d5412ee4 function;
+    class ref_globals_18122627 function;
+    class ref_eslint_plugin_react_hooks_36b93c5e ui;
+    class ref_eslint_plugin_react_refresh_e93dbdba function;
+    class eslint_config_80901414 module;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>eslint.config.js</code><br><small style="color:var(--muted)">eslint.config.js</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td><code>plugin react hooks</code><br><code>plugin react refresh</code><br><code>ref_eslint_js</code><br>+2 more</td>
+  <td>Reads, resolves, or persists project configuration.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>ref_eslint_js</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>eslint.config.js</code><br><small style="color:var(--muted)">eslint.config.js</small></td>
+  <td>No direct outbound edge</td>
+  <td>ref_eslint_js node in project.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>ref_eslint_plugin_react_hooks</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-hook">UI</span></td>
+  <td><code>eslint.config.js</code><br><small style="color:var(--muted)">eslint.config.js</small></td>
+  <td>No direct outbound edge</td>
+  <td>ref_eslint_plugin_react_hooks node in project.</td>
+</tr>
+<tr>
+  <td>4</td>
+  <td><code>ref_eslint_plugin_react_refresh</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>eslint.config.js</code><br><small style="color:var(--muted)">eslint.config.js</small></td>
+  <td>No direct outbound edge</td>
+  <td>ref_eslint_plugin_react_refresh node in project.</td>
+</tr>
+<tr>
+  <td>5</td>
+  <td><code>ref_globals</code><br><small style="color:var(--muted)"></small></td>
+  <td><span class="tag tag-func">Function</span></td>
+  <td><code>eslint.config.js</code><br><small style="color:var(--muted)">eslint.config.js</small></td>
+  <td>No direct outbound edge</td>
+  <td>ref_globals node in project.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>eslint.config.js</code></td><td>1 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: imports x4. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<!-- ====== 11. Vite Envdts Importmeta ====== -->
+<h2 id="vite-envdts-importmeta">11. Vite Envdts Importmeta</h2>
+<p>Vite Envdts Importmeta groups implementation around vite, envdts, importmeta, importmetaenv, mostly in src/vite-env.d.ts. This section covers 3 nodes and 2 internal edges; the diagram shows only representative relationships to stay readable.</p>
+
+<div class="mermaid">
+%%{init: {"theme": "dark", "themeVariables": {"fontSize": "15.0px", "fontFamily": "Segoe UI, system-ui, sans-serif", "primaryColor": "#1e293b", "primaryTextColor": "#e2e8f0", "primaryBorderColor": "#38bdf8", "secondaryColor": "#0f172a", "tertiaryColor": "#334155", "lineColor": "#64748b", "textColor": "#e2e8f0"}, "flowchart": {"htmlLabels": true, "curve": "basis", "nodeSpacing": 48, "rankSpacing": 64, "padding": 14, "diagramPadding": 10, "useMaxWidth": true}}}%%
+flowchart LR
+    %% Section: Vite Envdts Importmeta (3 nodes, 2 edges)
+    src_vite_env_d_695f3f8f("vite-env.d.ts")
+    src_vite_env_d_importmetaenv_fe59be30("ImportMetaEnv<br/><small>src/vite-env.d.ts</small>")
+    src_vite_env_d_importmeta_1aadf3e7("ImportMeta<br/><small>src/vite-env.d.ts</small>")
+    src_vite_env_d_695f3f8f -->|contains| src_vite_env_d_importmetaenv_fe59be30
+    src_vite_env_d_695f3f8f -->|contains| src_vite_env_d_importmeta_1aadf3e7
+    class src_vite_env_d_695f3f8f module;
+    class src_vite_env_d_importmetaenv_fe59be30 klass;
+    class src_vite_env_d_importmeta_1aadf3e7 klass;
+    classDef entry fill:#422006,stroke:#fbbf24,color:#fde68a,stroke-width:1px;
+    classDef api fill:#450a0a,stroke:#f87171,color:#fee2e2,stroke-width:1px;
+    classDef async fill:#2e1065,stroke:#a78bfa,color:#ede9fe,stroke-width:1px;
+    classDef klass fill:#064e3b,stroke:#34d399,color:#d1fae5,stroke-width:1px;
+    classDef ui fill:#831843,stroke:#f472b6,color:#fce7f3,stroke-width:1px;
+    classDef module fill:#172554,stroke:#60a5fa,color:#dbeafe,stroke-width:1px;
+    classDef test fill:#3f3f46,stroke:#a1a1aa,color:#f4f4f5,stroke-width:1px;
+    classDef concept fill:#292524,stroke:#a8a29e,color:#fafaf9,stroke-dasharray:4 3;
+    classDef function fill:#0f172a,stroke:#38bdf8,color:#e0f2fe,stroke-width:1px;
+</div>
+
+<h3>Call Details</h3>
+<table class="call-table">
+<tr>
+  <th style="width:5%">#</th>
+  <th style="width:28%">Node</th>
+  <th style="width:10%">Type</th>
+  <th style="width:17%">Caller</th>
+  <th style="width:20%">Callees</th>
+  <th style="width:20%">Description</th>
+</tr>
+<tr>
+  <td>1</td>
+  <td><code>ImportMeta</code><br><small style="color:var(--muted)">src/vite-env.d.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ImportMeta node in src/vite-env.d.ts.</td>
+</tr>
+<tr>
+  <td>2</td>
+  <td><code>ImportMetaEnv</code><br><small style="color:var(--muted)">src/vite-env.d.ts</small></td>
+  <td><span class="tag tag-class">Class</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>ImportMetaEnv node in src/vite-env.d.ts.</td>
+</tr>
+<tr>
+  <td>3</td>
+  <td><code>vite-env.d.ts</code><br><small style="color:var(--muted)">src/vite-env.d.ts</small></td>
+  <td><span class="tag tag-class">Module</span></td>
+  <td>External entry / no inbound edge</td>
+  <td>No direct outbound edge</td>
+  <td>Module file in src/vite-env.d.ts.</td>
+</tr>
+</table>
+
+<div class="grid">
+  <div class="card">
+    <h4>Key Files</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><th>File</th><th>Coverage</th></tr>
+      <tr><td><code>src/vite-env.d.ts</code></td><td>3 nodes</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Design Notes</h4>
+    <p>This section comes from graphify community clustering. Relationship summary: contains x2. The diagram prioritizes high-confidence calls or usage relationships; the table keeps the broader node inventory.</p>
+  </div>
+</div>
+<hr>
+
+<h2 id="stats">Project Statistics</h2>
+
+<div class="grid">
+  <div class="card">
+    <h4>Graph</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><td>Nodes</td><td>243</td></tr>
+      <tr><td>Edges</td><td>348</td></tr>
+      <tr><td>Hyperedges</td><td>0</td></tr>
+      <tr><td>Communities</td><td>13</td></tr>
+      <tr><td>Documented Sections</td><td>10</td></tr>
+    </table>
+  </div>
+  <div class="card">
+    <h4>Edge Confidence</h4>
+    <table style="width:100%;font-size:0.85rem;">
+      <tr><td>EXTRACTED</td><td>344</td></tr>
+      <tr><td>INFERRED</td><td>4</td></tr>
+      <tr><td>AMBIGUOUS</td><td>0</td></tr>
+    </table>
+  </div>
+</div>
+
+<div style="text-align:center; padding:40px 0; color: var(--muted); font-size:0.9rem;">
+  <p>nas — Architecture Documentation</p>
+  <p>Generated: 2026-10-28 06:37 UTC · graphify callflow-html</p>
+</div>
+
+</div><!-- .container -->
+
+<script>
+(function () {
+  const mermaidConfig = {
+    startOnLoad: false,
+    theme: 'dark',
+    securityLevel: 'loose',
+    flowchart: { htmlLabels: true, useMaxWidth: true },
+    themeVariables: {
+      primaryColor: '#1e293b',
+      primaryTextColor: '#e2e8f0',
+      primaryBorderColor: '#38bdf8',
+      secondaryColor: '#0f172a',
+      tertiaryColor: '#334155',
+      lineColor: '#64748b',
+      textColor: '#e2e8f0',
+    }
+  };
+
+  mermaid.initialize(mermaidConfig);
+
+  function clamp(value, min, max) {
+    return Math.min(max, Math.max(min, value));
+  }
+
+  function enhanceMermaidDiagrams() {
+    document.querySelectorAll('.mermaid').forEach((container) => {
+      if (container.dataset.zoomReady === 'true') return;
+      const svg = container.querySelector('svg');
+      if (!svg) return;
+
+      container.dataset.zoomReady = 'true';
+      container.classList.add('is-enhanced');
+
+      const viewport = document.createElement('div');
+      viewport.className = 'mermaid-viewport';
+      svg.parentNode.insertBefore(viewport, svg);
+      viewport.appendChild(svg);
+
+      const toolbar = document.createElement('div');
+      toolbar.className = 'mermaid-toolbar';
+      toolbar.innerHTML = [
+        '<button type="button" data-action="zoom-out" title="Zoom out">-</button>',
+        '<span class="zoom-level" data-role="level">100%</span>',
+        '<button type="button" data-action="zoom-in" title="Zoom in">+</button>',
+        '<button type="button" data-action="fit" title="Fit width">Fit</button>',
+        '<button type="button" data-action="reset" title="Reset view">Reset</button>'
+      ].join('');
+      container.insertBefore(toolbar, viewport);
+
+      const state = { scale: 1, x: 0, y: 0, dragging: false, startX: 0, startY: 0, originX: 0, originY: 0 };
+      const level = toolbar.querySelector('[data-role="level"]');
+
+      function applyTransform() {
+        svg.style.transform = `translate(${state.x}px, ${state.y}px) scale(${state.scale})`;
+        level.textContent = `${Math.round(state.scale * 100)}%`;
+      }
+
+      function zoomBy(delta) {
+        state.scale = clamp(state.scale + delta, 0.25, 3);
+        applyTransform();
+      }
+
+      function reset() {
+        state.scale = 1;
+        state.x = 0;
+        state.y = 0;
+        applyTransform();
+      }
+
+      function fitWidth() {
+        const rawWidth = svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width
+          ? svg.viewBox.baseVal.width
+          : svg.getBoundingClientRect().width / state.scale;
+        if (!rawWidth) {
+          reset();
+          return;
+        }
+        state.scale = clamp((viewport.clientWidth - 48) / rawWidth, 0.25, 1.4);
+        state.x = 0;
+        state.y = 0;
+        applyTransform();
+      }
+
+      toolbar.addEventListener('click', (event) => {
+        const button = event.target.closest('button[data-action]');
+        if (!button) return;
+        const action = button.dataset.action;
+        if (action === 'zoom-in') zoomBy(0.15);
+        if (action === 'zoom-out') zoomBy(-0.15);
+        if (action === 'fit') fitWidth();
+        if (action === 'reset') reset();
+      });
+
+      viewport.addEventListener('wheel', (event) => {
+        if (!event.ctrlKey && !event.metaKey) return;
+        event.preventDefault();
+        zoomBy(event.deltaY < 0 ? 0.1 : -0.1);
+      }, { passive: false });
+
+      viewport.addEventListener('pointerdown', (event) => {
+        if (event.button !== 0) return;
+        state.dragging = true;
+        state.startX = event.clientX;
+        state.startY = event.clientY;
+        state.originX = state.x;
+        state.originY = state.y;
+        viewport.classList.add('is-dragging');
+        viewport.setPointerCapture(event.pointerId);
+      });
+
+      viewport.addEventListener('pointermove', (event) => {
+        if (!state.dragging) return;
+        state.x = state.originX + event.clientX - state.startX;
+        state.y = state.originY + event.clientY - state.startY;
+        applyTransform();
+      });
+
+      function endDrag(event) {
+        if (!state.dragging) return;
+        state.dragging = false;
+        viewport.classList.remove('is-dragging');
+        if (viewport.hasPointerCapture(event.pointerId)) {
+          viewport.releasePointerCapture(event.pointerId);
+        }
+      }
+
+      viewport.addEventListener('pointerup', endDrag);
+      viewport.addEventListener('pointercancel', endDrag);
+      applyTransform();
+    });
+  }
+
+  function renderMermaid() {
+    const result = mermaid.run
+      ? mermaid.run({ querySelector: '.mermaid' })
+      : Promise.resolve();
+    Promise.resolve(result)
+      .then(enhanceMermaidDiagrams)
+      .catch((error) => {
+        console.error('Mermaid render failed:', error);
+        enhanceMermaidDiagrams();
+      });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', renderMermaid);
+  } else {
+    renderMermaid();
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -226,3 +226,15 @@ COPY --from=builder /app/dist /usr/share/nginx/html
 2. Faça as alterações com commits descritivos
 3. Execute `npm run type-check && npm run lint` antes de abrir PR
 4. Abra um Pull Request com descrição do que mudou e porquê
+
+---
+
+## 🗺️ Mapa Arquitetural & Grafo de Dependências
+
+Grafo estrutural e comunidades extraído via [graphify](https://github.com/Graphify-Labs/graphify):
+
+[![Grafo de Arquitetura](./graphify-out/graph.svg)](./graphify-out/GRAPH_REPORT.md)
+
+- 📊 **Relatório Arquitetural:** [graphify-out/GRAPH_REPORT.md](./graphify-out/GRAPH_REPORT.md)
+- 🌐 **Navegador Interativo (HTML):** Abra [`graphify-out/graph.html`](./graphify-out/graph.html) no navegador
+- 🔀 **Fluxo de Chamadas & Diagramas:** Abra [`graphify-out/nas-callflow.html`](./graphify-out/nas-callflow.html) para diagramas Mermaid
