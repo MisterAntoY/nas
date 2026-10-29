@@ -1,6 +1,20 @@
-# Virtual Earring Try-On
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://shieldcn.dev/header/graph.svg?title=Virtual+Earring+Try-On&subtitle=Provador+Virtual+de+Brincos+com+Detec%C3%A7%C3%A3o+Facial+por+IA&logo=sparkles&theme=rose&mode=dark" />
+    <img alt="Virtual Earring Try-On" src="https://shieldcn.dev/header/graph.svg?title=Virtual+Earring+Try-On&subtitle=Provador+Virtual+de+Brincos+com+Detec%C3%A7%C3%A3o+Facial+por+IA&logo=sparkles&theme=rose&mode=light" />
+  </picture>
+</p>
 
-Aplicação web que permite experimentar brincos virtualmente através de detecção facial por IA. O utilizador faz upload de uma selfie, escolhe um brinco do catálogo e obtém um preview realista para download.
+<p align="center">
+  <a href="https://github.com/MisterAntoY/nas"><img alt="GitHub Stars" src="https://shieldcn.dev/github/stars/MisterAntoY/nas.svg?variant=secondary&size=sm&theme=rose" /></a>
+  <a href="https://github.com/MisterAntoY/nas"><img alt="Last Commit" src="https://shieldcn.dev/github/last-commit/MisterAntoY/nas.svg?variant=secondary&size=sm&theme=rose" /></a>
+  <img alt="AI Vision" src="https://shieldcn.dev/badge/AI-Computer_Vision-ec4899.svg?variant=secondary&size=sm&theme=rose" />
+  <img alt="Client" src="https://shieldcn.dev/badge/Web-Fast_Preview-10b981.svg?variant=secondary&size=sm&theme=rose" />
+</p>
+
+---
+
+Aplicação web interativa que permite experimentar brincos virtualmente através de algoritmos de detecção facial e visão computacional por inteligência artificial. O utilizador faz upload de uma selfie, escolhe um brinco do catálogo e obtém um preview realista e instantâneo pronto para download.
 
 ---
 
